@@ -3,10 +3,10 @@
 The project was conducted as a master thesis in Tallinn University of Technology.
 
 Hardware used:
-ESP32 microcontroller
-optotransistors
-emitters
-peristaltic pump
+ESP32 microcontroller,
+optotransistors,
+emitters,
+peristaltic pump,
 
 Software solution:
 
