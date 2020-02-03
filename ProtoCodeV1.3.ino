@@ -31,6 +31,7 @@ const char *password = "Taltech2020"; // You can change it according to your eas
 
 int flow=50;
 int settime=50;
+
 float tubeDiameter=3,14;
 bool liguidP1=false;
 bool liguidP2=false;
@@ -45,7 +46,7 @@ int error;
 int propGain=1;
 int IntegralGain=0;
 int setpoint =2000;
-
+int maxAValue=4096;
 int PWMPin=23;
 
 int long previousTime=0;
@@ -94,8 +95,12 @@ void handlePostFlowUpdate()
   flow= server.arg(0).toInt();
   String response=String(flow);
   request->send(200,"text/plain",response);
+  setpoint = analogSacale(flow,maxAValue);
   Serial.print("Flow rate was updated: ");
   Serial.println(flow);
+  Serial.print("Analog PWM setpoint was set to: ");
+  Serial.println(setpoint);
+
 }
 
 void handlePostTime()
@@ -135,6 +140,28 @@ bool triggeThreshold(int analogSensoValue, int threshold)
   {
    return false
   }
+}
+
+int analogSacale(int flowRate,int maxAValue)
+{
+ int analogSacale = flowRate*maxAValue/100;
+ return analogSacale
+}
+
+int checkSetpoint(int setpoint)
+{
+ if (setpoint>maxAValue)
+ {
+  setpoint =maxAValue;
+  return setpoint;
+ }
+ else if (setpoint<0)
+  setpoint =0; //Should be found out what is the minimum flow rate required for 1ml/min
+  return setpoint;
+ else
+ {
+  return setpoint;
+ }
 }
 
 void setup() {
@@ -187,6 +214,7 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started");
   digitalWrite(BUILTIN_LED,1);
+  setpoint = analogSacale(flow,maxAValue);
 }
 
 void loop() {
@@ -205,10 +233,12 @@ void loop() {
   if (liguidP2)
   {
    int deltatime=previousTime-millis();
-   measuredFlowRate=flowRate(Distance1,calctime);
+   measuredFlowRate=flowRate(Distance1,deltatime);
    previousTime=millis();
    error = (measuredFlowRate-flow)*propGain+ IntegralGain*deltatime;//PI algorithm
-   analogWrite(PWMPin, (setpoint+error));
+   setpoint=setpoint+error;
+   setpoint = checkSetpoint(setpoint);
+   analogWrite(PWMPin, setpoint);
   }
  }
  else if (!liguidP3)
@@ -216,13 +246,15 @@ void loop() {
   int P3=analogRead(P3);
   previousTime=millis();
   liguidP3=triggeThreshold(P3,2500);
-  if (liguidP2)
+  if (liguidP3)
   {
    int deltatime=previousTime-millis();
-   measuredFlowRate=flowRate(Distance2,calctime);
+   measuredFlowRate=flowRate(Distance2,deltatime);
    previousTime=millis();
    error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error);//PID algorithm
-   analogWrite(PWMPin, (setpoint+error));
+   setpoint=setpoint+error;
+   setpoint = checkSetpoint(setpoint);
+   analogWrite(PWMPin, setpoint);
   }  
  }
  else if (!liguidP4)
@@ -232,11 +264,14 @@ void loop() {
  liguidP4=triggeThreshold(P4,2500);
  if (liguidP4)
  {
-   int calctime=previousTime-millis();
-   measuredFlowRate=flowRate(Distance3,calctime);
+   int deltatime=previousTime-millis();
+   measuredFlowRate=flowRate(Distance3,deltatime);
    previousTime=millis();
    error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error);//PID algorithm
-   analogWrite(PWMPin, (setpoint+error));
+   setpoint=setpoint+error;
+   setpoint = checkSetpoint(setpoint);
+   analogWrite(PWMPin, setpoint);
+
   }   
  }
  
