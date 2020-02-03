@@ -42,11 +42,11 @@ int Distance3=32;
 float measuredFlowRate=50;
 int setpoint;
 int error;
-propGain=1;
-IntegralGain=0;
-setpoint =2000;
+int propGain=1;
+int IntegralGain=0;
+int setpoint =2000;
 
-PWMPin=23;
+int PWMPin=23;
 
 int long previousTime=0;
 /* Put IP Address details */
