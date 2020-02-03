@@ -49,7 +49,10 @@ int setpoint =2000;
 int maxAValue=4096;
 int PWMPin=23;
 
-int long previousTime=0;
+int long previousTimeP1=0; //time stamp
+int long previousTimeP2=0; //time stamp
+int long previousTimeP3=0; //time stamp
+int long previousTimeP4=0; //time stamp
 /* Put IP Address details */
 IPAddress local_ip(192,168,1,1);
 IPAddress gateway(192,168,1,1);
@@ -232,18 +235,17 @@ void loop() {
  {
   int P1=analogRead(P1);
   liguidP1=triggeThreshold(P1,2500);
-  previousTime=millis();
+  previousTimeP1=millis();
  }
  else if (!liguidP2)
  {
   int P2=analogRead(P2);
-  previousTime=millis(); 
+  previousTimeP2=millis(); 
   liguidP2=triggeThreshold(P2,2500);
   if (liguidP2)
   {
-   int deltatime=previousTime-millis();
+   int deltatime=previousTimeP2-previousTimeP1;
    measuredFlowRate=flowRate(Distance1,deltatime);
-   previousTime=millis();
    error = (measuredFlowRate-flow)*propGain+ IntegralGain*deltatime;//PI algorithm
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
@@ -253,13 +255,12 @@ void loop() {
  else if (!liguidP3)
  {
   int P3=analogRead(P3);
-  previousTime=millis();
+  previousTimeP3=millis();
   liguidP3=triggeThreshold(P3,2500);
   if (liguidP3)
   {
-   int deltatime=previousTime-millis();
+   int deltatime=previousTimeP3-previousTimeP2;
    measuredFlowRate=flowRate(Distance2,deltatime);
-   previousTime=millis();
    error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error)/deltatime;//PID algorithm
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
@@ -269,13 +270,12 @@ void loop() {
  else if (!liguidP4)
  { 
  int P4=analogRead(P4);
- previousTime=millis();
+ previousTimeP4=millis();
  liguidP4=triggeThreshold(P4,2500);
  if (liguidP4)
  {
-   int deltatime=previousTime-millis();
+   int deltatime=previousTimeP4-previousTimeP3;
    measuredFlowRate=flowRate(Distance3,deltatime);
-   previousTime=millis();
    error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error)/deltatime;//PID algorithm
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
