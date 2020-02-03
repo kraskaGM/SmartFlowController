@@ -45,9 +45,14 @@ int setpoint;
 int error;
 int propGain=1;
 int IntegralGain=0;
+int DerGain=0;
 int setpoint =2000;
 int maxAValue=4096;
 int PWMPin=23;
+int integral=0;
+int prev_error=0;
+int derivative=0;
+int PID;
 
 int long previousTimeP1=0; //time stamp
 int long previousTimeP2=0; //time stamp
@@ -246,7 +251,12 @@ void loop() {
   {
    int deltatime=previousTimeP2-previousTimeP1;
    measuredFlowRate=flowRate(Distance1,deltatime);
-   error = (measuredFlowRate-flow)*propGain+ IntegralGain*deltatime;//PI algorithm
+   error=measuredFlowRate-flow;
+   Prev_error=error;
+   integral =integral+error*deltatime //Errors over time added
+   derivative=(error-prev_error)/deltatime; //comparision error over time 
+   PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
+   Prev_error=error;
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
@@ -261,7 +271,12 @@ void loop() {
   {
    int deltatime=previousTimeP3-previousTimeP2;
    measuredFlowRate=flowRate(Distance2,deltatime);
-   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error)/deltatime;//PID algorithm
+   error=measuredFlowRate-flow;
+   Prev_error=error;
+   integral =integral+error*deltatime //Errors over time added
+   derivative=(error-prev_error)/deltatime; //comparision error over time 
+   PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
+   Prev_error=error;
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
@@ -276,7 +291,12 @@ void loop() {
  {
    int deltatime=previousTimeP4-previousTimeP3;
    measuredFlowRate=flowRate(Distance3,deltatime);
-   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error)/deltatime;//PID algorithm
+   error=measuredFlowRate-flow;
+   Prev_error=error;
+   integral =integral+error*deltatime //Errors over time added
+   derivative=(error-prev_error)/deltatime;//comparision error over time 
+   PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
+   Prev_error=error;
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
