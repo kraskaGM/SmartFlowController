@@ -225,11 +225,11 @@ void loop() {
    analogWrite(PWMPin, (setpoint+error));
   }  
  }
- else if (!liguidP3)
+ else if (!liguidP4)
  { 
- int P4=analogRead(P3);
+ int P4=analogRead(P4);
  previousTime=millis();
- liguidP4=triggeThreshold(P3,2500);
+ liguidP4=triggeThreshold(P4,2500);
  if (liguidP4)
  {
    int calctime=previousTime-millis();
