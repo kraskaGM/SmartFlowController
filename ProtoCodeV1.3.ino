@@ -80,6 +80,15 @@ void handleDigitalOutput(){
   response+=!digitalRead(BUILTIN_LED);
   request->send(200,"text/plain",response);
   Serial.println("LED was toggled");
+ 
+ if (response=="1")
+ {
+  analogWrite(PWMPin, setpoint);
+ }
+ else
+ {
+  analogWrite(PWMPin, 0);
+ }
 }
 
 void handlePostFlow()
