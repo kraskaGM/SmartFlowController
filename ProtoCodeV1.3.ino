@@ -260,7 +260,7 @@ void loop() {
    int deltatime=previousTime-millis();
    measuredFlowRate=flowRate(Distance2,deltatime);
    previousTime=millis();
-   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error);//PID algorithm
+   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error)/deltatime;//PID algorithm
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
@@ -276,7 +276,7 @@ void loop() {
    int deltatime=previousTime-millis();
    measuredFlowRate=flowRate(Distance3,deltatime);
    previousTime=millis();
-   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error);//PID algorithm
+   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error)/deltatime;//PID algorithm
    setpoint=setpoint+error;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
