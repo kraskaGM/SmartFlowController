@@ -31,7 +31,24 @@ const char *password = "Taltech2020"; // You can change it according to your eas
 
 int flow=50;
 int settime=50;
+float tubeDiameter=3,14;
+bool liguidP1=false;
+bool liguidP2=false;
+bool liguidP3=false;
+bool liguidP4=false;
+int Distance1=32;
+int Distance2=40;
+int Distance3=32;
+float measuredFlowRate=50;
+int setpoint;
+int error;
+propGain=1;
+IntegralGain=0;
+setpoint =2000;
 
+PWMPin=23;
+
+int long previousTime=0;
 /* Put IP Address details */
 IPAddress local_ip(192,168,1,1);
 IPAddress gateway(192,168,1,1);
@@ -98,6 +115,28 @@ void handlePostTimeUpdate()
   Serial.println(settime);
 }
 
+float flowRate(int distance, int time)
+{
+ 
+ float volume = float(distance)*tubeDiameter/1000;//ml/min
+ float flowRate =volume*float(time);
+ 
+ return flowRate;
+}
+ 
+bool triggeThreshold(int analogSensoValue, int threshold)
+ 
+{
+ if (analogSensoValue > threshold)
+ {
+   return true
+ }
+  else
+  {
+   return false
+  }
+}
+
 void setup() {
   
   pinMode(BUILTIN_LED,OUTPUT);
@@ -152,4 +191,53 @@ void setup() {
 
 void loop() {
   server.handleClient();
+ if (!liguidP1)
+ {
+  int P1=analogRead(P1);
+  liguidP1=triggeThreshold(P1,2500);
+  previousTime=millis();
+ }
+ else if (!liguidP2)
+ {
+  int P2=analogRead(P2);
+  previousTime=millis(); 
+  liguidP2=triggeThreshold(P2,2500);
+  if (liguidP2)
+  {
+   int deltatime=previousTime-millis();
+   measuredFlowRate=flowRate(Distance1,calctime);
+   previousTime=millis();
+   error = (measuredFlowRate-flow)*propGain+ IntegralGain*deltatime;//PI algorithm
+   analogWrite(PWMPin, (setpoint+error));
+  }
+ }
+ else if (!liguidP3)
+ {
+  int P3=analogRead(P3);
+  previousTime=millis();
+  liguidP3=triggeThreshold(P3,2500);
+  if (liguidP2)
+  {
+   int deltatime=previousTime-millis();
+   measuredFlowRate=flowRate(Distance2,calctime);
+   previousTime=millis();
+   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error);//PID algorithm
+   analogWrite(PWMPin, (setpoint+error));
+  }  
+ }
+ else if (!liguidP3)
+ { 
+ int P4=analogRead(P3);
+ previousTime=millis();
+ liguidP4=triggeThreshold(P3,2500);
+ if (liguidP4)
+ {
+   int calctime=previousTime-millis();
+   measuredFlowRate=flowRate(Distance3,calctime);
+   previousTime=millis();
+   error = (measuredFlowRate-flow)*propGain+IntegralGain*deltatime+(propGain-error);//PID algorithm
+   analogWrite(PWMPin, (setpoint+error));
+  }   
+ }
+ 
 }
