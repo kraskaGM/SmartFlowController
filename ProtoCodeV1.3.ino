@@ -257,7 +257,7 @@ void loop() {
    derivative=(error-prev_error)/deltatime; //comparision error over time 
    PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
    Prev_error=error;
-   setpoint=setpoint+error;
+   setpoint=setpoint+PID;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
   }
@@ -277,7 +277,7 @@ void loop() {
    derivative=(error-prev_error)/deltatime; //comparision error over time 
    PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
    Prev_error=error;
-   setpoint=setpoint+error;
+   setpoint=setpoint+PID;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
   }  
@@ -297,7 +297,7 @@ void loop() {
    derivative=(error-prev_error)/deltatime;//comparision error over time 
    PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
    Prev_error=error;
-   setpoint=setpoint+error;
+   setpoint=setpoint+PID;
    setpoint = checkSetpoint(setpoint);
    analogWrite(PWMPin, setpoint);
 
