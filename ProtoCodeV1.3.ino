@@ -24,60 +24,69 @@ https://youtu.be/fcmb_3aBfH4
   #include <FS.h>
 #endif
 
-
+/*Communication specific variable*/
 /* Set these to your desired credentials. */
 const char *ssid = "SmartFlowController"; // You can change it according to your ease
 const char *password = "Taltech2020"; // You can change it according to your ease
+/* Put IP Address details */
+IPAddress local_ip(192,168,1,1);
+IPAddress gateway(192,168,1,1);
+IPAddress subnet(255,255,255,0);
 
 int flow=50;
 int settime=50;
 
+/*Hardware specific variables*/
 /* The flow sensor analog inputs*/
 const int P1 = 26; 
 const int P2 = 27;
 const int P3 = 14;
 const int P4 = 12;
 
-/* Peristaltic pump analog output*/
-const int K1=23;
+float measuredFlowRate=50;
 
-/* Satus LED digital outputs*/
-const int GNLED = 19;
-const int RDLED = 5;
-float tubeDiameter=3.14;
+/*Function Variables*/
 bool liguidP1=false;
 bool liguidP2=false;
 bool liguidP3=false;
 bool liguidP4=false;
-int Distance1=32;
-int Distance2=40;
-int Distance3=32;
-float measuredFlowRate=50;
-int setpoint=2000;
-int error;
+
+int long previousTimeP1=0; //time stamp
+int long previousTimeP2=0; //time stamp
+int long previousTimeP3=0; //time stamp
+int long previousTimeP4=0; //time stam
+
+/* Peristaltic pump analog output*/
+const int K1=23;
+const int PWMPin=23;
+
+int maxAValue=4096;
+/* Satus LED digital outputs*/
+const int GNLED = 19;
+const int RDLED = 5;
+
+float tubeDiameter=3.14; //mm
+int Distance1=32; //mm
+int Distance2=40; //mm
+int Distance3=32; //mm
+
+/*PID variables*/
 int propGain=1;
 int IntegralGain=0;
 int DerGain=0;
-int maxAValue=4096;
-int PWMPin=23;
+
+int setpoint=2000;
+int error;
+
 int integral=0;
 int prev_error=0;
 int derivative=0;
 int PID;
 
-int long previousTimeP1=0; //time stamp
-int long previousTimeP2=0; //time stamp
-int long previousTimeP3=0; //time stamp
-int long previousTimeP4=0; //time stamp
-/* Put IP Address details */
-IPAddress local_ip(192,168,1,1);
-IPAddress gateway(192,168,1,1);
-IPAddress subnet(255,255,255,0);
-
+/*Webserver*/
 AsyncWebServer server(80); // establishing server at port 80 (HTTP protocol's default port)
 
 const char HTML[] PROGMEM={"<!DOCTYPE html>\n<html>\n<head>\n\t<title>Flow control</title>\n\t<meta charset=\"utf-8\" name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\t<link rel=\"stylesheet\" type=\"text/css\" href=\"main.css\">\n\t<script src=\"jquery.js\"></script>\n\t<script src=\"myJsFunctions.js\"></script>\n</head>\n<body>\n\t<h1>Flow control</h1>\n\t<div class=\"slidecontainer\">\n\t\t<p>Set the flow rate</p>\n\t\t<input type=\"range\" onclick=\"Setflow()\" min=\"1\" max=\"100\" value=\"50\" class=\"slider\" id=\"myRange\">\n\t\t<p>Value: <span id=\"demo\"></span> ml/min</p>\n\t\t<script>\n\t\tvar slider = document.getElementById(\"myRange\");\n\t\tvar output = document.getElementById(\"demo\");\n\t\toutput.innerHTML = slider.value;\n\t\tslider.oninput = function() {\n\t\t  output.innerHTML = this.value;\n\t\t}\n\t\t</script>\n\t</div>\n\t<div class=\"slidecontainer\">\n\t\t<p>Set the time of pumping</p>\n\t\t<input type=\"range\" onclick=\"Settime()\" min=\"1\" max=\"100\" value=\"50\" class=\"slider\" id=\"myRange2\">\n\t\t<p>Value: <span id=\"demo2\"></span> seconds </p>\n\t\t<script>\n\t\tvar slider2 = document.getElementById(\"myRange2\");\n\t\tvar output2 = document.getElementById(\"demo2\");\n\t\toutput2.innerHTML = slider2.value;\n\t\tslider2.oninput = function() {\n\t\t  output2.innerHTML = this.value;\n\t\t}\n\t\t</script>\n\t</div>\n  <div class=\"toggleBox\">\n  <p>Turn pump on/off</p>\n    <div class=\"toggle\">\n      <input type=\"checkbox\" onclick=\"changeOutput()\" id =\"myCheck\">\n      <label for=\"\" class=\"onbtn\" >On</label>\n      <label for=\"\" class=\"ofbtn\" >Off</label> \n    </div>\n  </div>  \n\t<title> Count down timer</title>\n\t<div class=\"container\">\n\t\t<h1 id=\"count\" >Set Parameters</h1>\n\t</div>\n\n</body>"};
-
 
 const char mainCSS[] PROGMEM= {"\n.slidecontainer {\n  width: 100%;\n}\n.slider {\n  -webkit-appearance: none;\n  width: 50%;\n  height: 25px;\n  background: #b3a3c3;\n  outline: none;\n  opacity: 0.7;\n  -webkit-transition: .2s;\n  transition: opacity .2s;\n}\n.slider:hover {\n  opacity: 1;\n}\n.slider::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 25px;\n  height: 25px;\n  background: #4CAD50;\n  cursor: pointer;\n}\n.slider::-moz-range-thumb {\n  width: 25px;\n  height: 25px;\n  background: #4CAG50;\n  cursor: pointer;\n}\n\nbody {\n  margin: 0;\n  padding: 0;\n  font-family: 'Montserrat', sans-serif;\n  background: #1abc9c;\n  display: grid;\n  align-items: center;\n  height: 40vh;\n  text-align: center;\n}\n\nh1 {\n  font-size: 42px;\n  color: #2c3e50;\n}\ninput[type=\"checkbox\"] {\n  position: relative;\n  width: 100px;\n  height: 40px;\n  background: #bdc3c7;\n  -webkit-appearance: none;\n  border-radius: 20px;\n  outline: none;\n  transition: .4s;\n  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\ninput:checked[type=\"checkbox\"] {\n  background: #3498db;\n}\ninput[type=\"checkbox\" ]::before {\n  z-index: 2;\n  position: absolute;\n  content: \"\";\n  left: 0;\n  width: 40px;\n  height: 40px;\n  background: #fff;\n  border-radius: 50%;\n  transform: scale(1.1);\n  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);\n  transition: .4s;\n}\ninput:checked[type=\"checkbox\"]::before {\n  left: 60px;\n}\n.toggle {\n  position: relative;\n  display: inline;\n}\nlabel {\n  position: absolute;\n  color: #fff;\n  font-weight: 600;\n  font-size: 20px;\n  pointer-events: none;\n}\n.onbtn {\n  bottom: 15px;\n  left: 15px;\n}\n.ofbtn {\n  bottom: 15px;\n  right: 14px;\n  color: #34495e;\n}\n\n\n"};
 
@@ -108,7 +117,6 @@ void handleDigitalOutput(){
   request->send(200,"text/plain",response);
   });
   Serial.println("LED was toggled");
- 
  if (response=="1")
  {
   ledcWrite(PWMPin, setpoint);
@@ -141,7 +149,6 @@ void handlePostFlowUpdate()
   Serial.println(flow);
   Serial.print("Analog PWM setpoint was set to: ");
   Serial.println(setpoint);
-
 }
 
 void handlePostTime()
