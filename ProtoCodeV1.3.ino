@@ -32,7 +32,19 @@ const char *password = "Taltech2020"; // You can change it according to your eas
 int flow=50;
 int settime=50;
 
-float tubeDiameter=3,14;
+/* The flow sensor analog inputs*/
+const int P1 = 26; 
+const int P2 = 27;
+const int P3 = 14;
+const int P4 = 12;
+
+/* Peristaltic pump analog output*/
+const int K1=23;
+
+/* Satus LED digital outputs*/
+const int GNLED = 19;
+const int RDLED = 5;
+float tubeDiameter=3.14;
 bool liguidP1=false;
 bool liguidP2=false;
 bool liguidP3=false;
@@ -41,12 +53,11 @@ int Distance1=32;
 int Distance2=40;
 int Distance3=32;
 float measuredFlowRate=50;
-int setpoint;
+int setpoint=2000;
 int error;
 int propGain=1;
 int IntegralGain=0;
 int DerGain=0;
-int setpoint =2000;
 int maxAValue=4096;
 int PWMPin=23;
 int integral=0;
@@ -76,8 +87,15 @@ const char jquery_js[]PROGMEM={"/*! jQuery v3.1.1 | (c) jQuery Foundation | jque
 
 const char myJsFunctions_js[]PROGMEM = {"function changeOutput(toggle) {\n\tvar x = document.getElementById(\"myCheck\").checked;\n\tvar y = document.getElementById(\"myRange2\").value;\n\tif (x==true) {\t\t  \n\t\tvar counter = y;\t\n\t\tvar someUrl = \"/digital_output/toggle\";\n\t\t$.ajax({\n\t\t\turl: someUrl,\n\t\t\tdataType: \"text\",\n\t\t\tsuccess: function(response){},\n\t\t\ttimeout: 2000\n\t\t\t}\n\t\t)\t\n\tsetInterval(function(){\n\t\tcounter--;\n\t\tx = document.getElementById(\"myCheck\").checked;\t\t\t\t\n\t\tif (counter > 0 & x==true){\n\t\t\tid = document.getElementById(\"count\");\n\t\t\tid.innerHTML=counter;\n\t\t}\n\t\telse if (counter == 0 & x==true){\n\t\t\tid.innerHTML=\"COMPLETE\";\n\t\t}\n\t\telse if (x==false) {\n\t\t\tid.innerHTML=\"Stopped\";\n\t\t\tcounter = document.getElementById(\"myRange2\").value;\n\t\t}\n\t},1000);\n\n\t}\n\telse{\n\t\tvar someUrl = \"/digital_output/toggle\";\n\t\t$.ajax({\n\t\t\turl: someUrl,\n\t\t\tdataType: \"text\",\n\t\t\tsuccess: function(response) {},\n\t\t\ttimeout: 2000\n\t\t\t}\n\t\t)\t\n\t}\n}\nvar flow = 0;\nfunction sendlow(postflow) {\n\tvar someUrl = \"/postflow\";\n\t$.ajax({\n\t\turl: someUrl,\n\t\tdataType: \"text\",\n\t\tsuccess: function(response) {flow = parseInt(response);},\n\t\ttimeout: 2000\n\t\t}\n\t)\n}\nfunction Setflow(postflow) {\n\tvar FlowRate =document.getElementById(\"myRange\").value;\n\tvar someUrl = \"/postflow/update?value=\" + FlowRate;\n\t$.ajax({url: someUrl,dataType: \"text\",success: function(response) {flow = parseInt(response);}})}\n\t\nvar pump = 0;\nfunction sendtime(postime) {\n\tvar someUrl  = \"/postime\";\n\t$.ajax({\n\t\turl: someUrl,\n\t\tdataType: \"text\",\n\t\tsuccess: function(response) {pump = parseInt(response);},\n\t\ttimeout: 2000\n\t\t}\n\t)\n}\nfunction Settime(postime) {\n\tvar Pumptime = document.getElementById(\"myRange2\").value;\t\n\tvar someUrl = \"/postime/update?value=\" + Pumptime;\n\t$.ajax({url: someUrl,dataType: \"text\",success: function(response) {pump = parseInt(response);}})}\n\n\t\n"};
 
+int analogSacale(int flowRate,int maxAValue)
+{
+ int analogSacale = flowRate*maxAValue/100;
+ return analogSacale;
+}
+
 void handleNotFound(){
   String message = "File Not Found\n\n";
+  AsyncWebServerRequest *request;
   request->send(404, "text/plain", message);
 }
 
@@ -85,32 +103,38 @@ void handleNotFound(){
 void handleDigitalOutput(){ 
   String response="";   
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));     
-  response+=!digitalRead(BUILTIN_LED);
+  response+=!digitalRead(BUILTIN_LED);  
+  server.on("/digital_output/toggle", HTTP_GET, [](AsyncWebServerRequest *request){
   request->send(200,"text/plain",response);
+  });
   Serial.println("LED was toggled");
  
  if (response=="1")
  {
-  analogWrite(PWMPin, setpoint);
+  ledcWrite(PWMPin, setpoint);
  }
  else
  {
-  analogWrite(PWMPin, 0);
+  ledcWrite(PWMPin, 0);
  }
 }
 
 void handlePostFlow()
 { 
-  String response=String(flow);  
+  String response=String(flow);
+  
+  server.on("/postflow",HTTP_GET,[]AsyncWebServerRequest *request){ 
   request->send(200,"text/plain",response);
+  });
   Serial.print("Flow rate was set to: ");
   Serial.println(flow);
 }
 
 void handlePostFlowUpdate()
 { 
-  flow= server.arg(0).toInt();
+  //flow= server.arg(0).toInt();
   String response=String(flow);
+  AsyncWebServerRequest *request;
   request->send(200,"text/plain",response);
   setpoint = analogSacale(flow,maxAValue);
   Serial.print("Flow rate was updated: ");
@@ -122,7 +146,8 @@ void handlePostFlowUpdate()
 
 void handlePostTime()
 {
-  String response=String(settime);  
+  String response=String(settime); 
+  AsyncWebServerRequest *request; 
   request->send(200,"text/plain",response);
   Serial.print("Pumping time was set to: ");
   Serial.println(settime);
@@ -130,8 +155,9 @@ void handlePostTime()
 
 void handlePostTimeUpdate()
 { 
-  settime=server.arg(0).toInt();
+  //settime=server.arg(0).toInt();
   String response=String(settime);
+  AsyncWebServerRequest *request;
   request->send(200,"text/plain",response);
   Serial.print("Pumping time was Updated: ");
   Serial.println(settime);
@@ -151,18 +177,12 @@ bool triggeThreshold(int analogSensoValue, int threshold)
 {
  if (analogSensoValue > threshold)
  {
-   return true
+   return true;
  }
   else
   {
-   return false
+   return false;
   }
-}
-
-int analogSacale(int flowRate,int maxAValue)
-{
- int analogSacale = flowRate*maxAValue/100;
- return analogSacale
 }
 
 int checkSetpoint(int setpoint)
@@ -173,8 +193,10 @@ int checkSetpoint(int setpoint)
   return setpoint;
  }
  else if (setpoint<0)
+ {
   setpoint =0; //Should be found out what is the minimum flow rate required for 1ml/min
   return setpoint;
+ }
  else
  {
   return setpoint;
@@ -184,7 +206,25 @@ int checkSetpoint(int setpoint)
 void setup() {
   
   pinMode(BUILTIN_LED,OUTPUT);
-    
+  /* The flow sensor analog inputs*/
+  analogReadResolution(12); // 12 bit resolution for ADC reading
+  analogSetWidth(12); //12 bit resolution for ADC writing
+  analogSetCycles(8);// 1 analog value is read 8 times;
+  analogSetSamples(1); // analog samples - immpact in sensitivity
+  analogSetClockDiv(1); // analog clock divider 1-255, fastest 1
+  analogSetAttenuation(ADC_11db); //for all pins 3.6 volt attenuation (1V input = ADC reading of 3959)
+  //analogSetPinAttenuation(pin, attenuation) //sets attenuation for specific pin
+  adcAttachPin(P1);
+  adcAttachPin(P2);
+  adcAttachPin(P3);
+  adcAttachPin(P4);
+/* Peristaltic pump analog output*/
+  pinMode(K1,OUTPUT);
+/* Satus LED digital outputs*/
+  pinMode(GNLED,OUTPUT);
+  pinMode(RDLED,OUTPUT);
+  digitalWrite(GNLED,HIGH);
+  digitalWrite(RDLED,LOW);   
   Serial.begin(115200);
 
   // Initialize SPIFFS
@@ -207,23 +247,19 @@ void setup() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", HTML);
   });
-
   server.on("/main.css" , HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/css", mainCSS);
   });
-
   server.on("/jquery.js", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200,"application/js",jquery_js);
   });
-
   server.on("/myJsFunctions.js", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200,"application/js",myJsFunctions_js);
-});
+  });
 
-  server.on("/digital_output/toggle", HTTP_GET, handleDigitalOutput)
-
-);
-  server.on("/postflow",HTTP_GET,handlePostFlow);
+  handleDigitalOutput();
+  handlePostFlow();
+  
   server.on("/postflow/update",HTTP_GET,handlePostFlowUpdate);    
   server.on("/postime",HTTP_GET,handlePostTime);
   server.on("/postime/update",HTTP_GET,handlePostTimeUpdate);  
@@ -259,7 +295,7 @@ void loop() {
    Prev_error=error;
    setpoint=setpoint+PID;
    setpoint = checkSetpoint(setpoint);
-   analogWrite(PWMPin, setpoint);
+   ledcWrite(PWMPin, setpoint);
   }
  }
  else if (!liguidP3)
@@ -279,7 +315,7 @@ void loop() {
    Prev_error=error;
    setpoint=setpoint+PID;
    setpoint = checkSetpoint(setpoint);
-   analogWrite(PWMPin, setpoint);
+   ledcWrite(PWMPin, setpoint);
   }  
  }
  else if (!liguidP4)
@@ -299,7 +335,7 @@ void loop() {
    Prev_error=error;
    setpoint=setpoint+PID;
    setpoint = checkSetpoint(setpoint);
-   analogWrite(PWMPin, setpoint);
+   ledcWrite(PWMPin, setpoint);
 
   }   
  }
