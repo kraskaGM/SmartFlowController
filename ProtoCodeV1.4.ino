@@ -87,7 +87,8 @@ int IntegralGain=0;
 int DerGain=0;
 
 int setpoint=2000;
-int error;
+int error=0;
+int Prev_error=0;
 
 int integral=0;
 int prev_error=0;
@@ -210,22 +211,18 @@ int analogSacale(int flowRate,int maxAValue)
  return analogSacale;
 }
 
-void handlePostFlow()
+void handlePostFlow(AsyncWebServerRequest *request)
 { 
   String response=String(flow);
-  
-  server.on("/postflow",HTTP_GET,[]AsyncWebServerRequest *request){ 
   request->send(200,"text/plain",response);
-  });
   Serial.print("Flow rate was set to: ");
   Serial.println(flow);
 }
 
-void handlePostFlowUpdate()
+void handlePostFlowUpdate(AsyncWebServerRequest *request)
 { 
   //flow= server.arg(0).toInt();
   String response=String(flow);
-  AsyncWebServerRequest *request;
   request->send(200,"text/plain",response);
   setpoint = analogSacale(flow,maxAValue);
   Serial.print("Flow rate was updated: ");
@@ -234,20 +231,18 @@ void handlePostFlowUpdate()
   Serial.println(setpoint);
 }
 
-void handlePostTime()
+void handlePostTime(AsyncWebServerRequest *request)
 {
   String response=String(settime); 
-  AsyncWebServerRequest *request; 
   request->send(200,"text/plain",response);
   Serial.print("Pumping time was set to: ");
   Serial.println(settime);
 }
 
-void handlePostTimeUpdate()
+void handlePostTimeUpdate(AsyncWebServerRequest *request)
 { 
   //settime=server.arg(0).toInt();
   String response=String(settime);
-  AsyncWebServerRequest *request;
   request->send(200,"text/plain",response);
   Serial.print("Pumping time was Updated: ");
   Serial.println(settime);
@@ -343,6 +338,15 @@ void setup() {
   server.on("/jquery.js", HTTP_GET, onjqueyRequest);
 
   server.on("/myJsFunctions.js", HTTP_GET, onmyFunctionsRequest);
+
+  server.on("/postflow",HTTP_GET,handlePostFlow);    
+  server.on("/postflow/update",HTTP_GET,handlePostFlowUpdate);    
+  server.on("/postime",HTTP_GET,handlePostTime);
+  server.on("/postime/update",HTTP_GET,handlePostTimeUpdate);  
+ 
+  // Handle requests for pages that do not exist
+  server.onNotFound(onPageNotFound);
+  
   /* Old version
    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", HTML);
@@ -357,13 +361,7 @@ void setup() {
     request->send_P(200,"application/js",myJsFunctions_js);
   });*/
   
-  server.on("/postflow",HTTP_GET,handlePostFlow);    
-  server.on("/postflow/update",HTTP_GET,handlePostFlowUpdate);    
-  server.on("/postime",HTTP_GET,handlePostTime);
-  server.on("/postime/update",HTTP_GET,handlePostTimeUpdate);  
- 
-  // Handle requests for pages that do not exist
-  server.onNotFound(onPageNotFound);
+
  
   // Start web server
   server.begin();
@@ -377,7 +375,7 @@ void setup() {
   setpoint = analogSacale(flow,maxAValue);
 }
 
-void PID()
+void PIDControl()
 {
 if (!liguidP1)
 {
@@ -395,8 +393,7 @@ else if (!liguidP2)
    int deltatime=previousTimeP2-previousTimeP1;
    measuredFlowRate=flowRate(Distance1,deltatime);
    error=measuredFlowRate-flow;
-   Prev_error=error;
-   integral =integral+error*deltatime //Errors over time added
+   integral =integral+error*deltatime; //Errors over time added
    derivative=(error-prev_error)/deltatime; //comparision error over time 
    PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
    Prev_error=error;
@@ -415,8 +412,7 @@ else if (!liguidP2)
    int deltatime=previousTimeP3-previousTimeP2;
    measuredFlowRate=flowRate(Distance2,deltatime);
    error=measuredFlowRate-flow;
-   Prev_error=error;
-   integral =integral+error*deltatime //Errors over time added
+   integral =integral+error*deltatime; //Errors over time added
    derivative=(error-prev_error)/deltatime; //comparision error over time 
    PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
    Prev_error=error;
@@ -435,8 +431,7 @@ else if (!liguidP2)
    int deltatime=previousTimeP4-previousTimeP3;
    measuredFlowRate=flowRate(Distance3,deltatime);
    error=measuredFlowRate-flow;
-   Prev_error=error;
-   integral =integral+error*deltatime //Errors over time added
+   integral =integral+error*deltatime; //Errors over time added
    derivative=(error-prev_error)/deltatime;//comparision error over time 
    PID = propGain*error+IntegralGain*integral+DerGain*derivative;//PID algorithm
    Prev_error=error;
@@ -448,7 +443,7 @@ else if (!liguidP2)
 }
  
 void loop() {
-  server.handleClient();
+  //server.handleClient();
   webSocket.loop();
-  PID();  
+  PIDControl();  
 }
