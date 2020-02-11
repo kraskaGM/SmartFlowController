@@ -3,6 +3,10 @@ var url = "ws://192.168.1.1:1337/";
 var button;
 var canvas;
 var context;
+var flow = 0;
+var pump = 0;
+
+// Called whenever the HTML button is pressed
 function changeOutput() {
 	onPress();
 	counter();
@@ -37,14 +41,38 @@ function counter()
 	}
 }
 
-function Setflow() 
-{
-	var FlowRate =document.getElementById("myRange").value;
-	doSend(FlowRate);	
+function sendlow(postflow) {
+	var someUrl = "/postflow";
+	$.ajax({
+		url: someUrl,
+		dataType: "text",
+		success: function(response) {flow = parseInt(response);},
+		timeout: 2000
+		}
+	)
 }
-function Settime() {
+function Setflow(postflow) {
+	var FlowRate =document.getElementById("myRange").value;
+	var someUrl = "/postflow/update?value=" + FlowRate;
+	$.ajax({url: someUrl,dataType: "text",success: function(response) {flow = parseInt(response);}})
+}
+	
+var pump = 0;
+function sendtime(postime) {
+	var someUrl  = "/postime";
+	$.ajax({
+		url: someUrl,
+		dataType: "text",
+		success: function(response) {pump = parseInt(response);},
+		timeout: 2000
+		}
+	)
+}
+function Settime(postime) {
 	var Pumptime = document.getElementById("myRange2").value;	
-	doSend(FlowRate);	
+	var someUrl = "/postime/update?value=" + Pumptime;
+	$.ajax({url: someUrl,dataType: "text",success: function(response) {pump = parseInt(response);}})
+}
 
 // This is called when the page finishes loading
 function init() {
@@ -82,8 +110,8 @@ function onOpen(evt) {
     // Log connection state
     console.log("Connected");
     
-    // Get the current state of the LED
-    doSend("getLEDState");
+    // Get the current state of the Pump
+    doSend("getPumpState");
 }
 
 // Called when the WebSocket connection is closed
@@ -125,44 +153,10 @@ function doSend(message) {
     websocket.send(message);
 }
  
-// Called whenever the HTML button is pressed
 function onPress() {
-    doSend("toggleLED");
-    doSend("getLEDState");
+    doSend("togglePump");
+    doSend("getPumpState");
 }
  
 // Call the init function as soon as the page loads
 window.addEventListener("load", init, false);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
