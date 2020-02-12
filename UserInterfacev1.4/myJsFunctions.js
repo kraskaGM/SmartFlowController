@@ -57,7 +57,6 @@ function Setflow(postflow) {
 	$.ajax({url: someUrl,dataType: "text",success: function(response) {flow = parseInt(response);}})
 }
 	
-var pump = 0;
 function sendtime(postime) {
 	var someUrl  = "/postime";
 	$.ajax({
