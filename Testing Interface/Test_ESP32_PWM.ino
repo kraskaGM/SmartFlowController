@@ -392,11 +392,12 @@ void setup() {
 
   Serial.println("HTTP server started");
 
-  setpoint = analogSacale(flow,maxAValue);
+  //setpoint = analogSacale(flow,maxAValue);
 }
 
 
  
 void loop() {
   webSocket.loop();
+ ledcWrite(PWMPin, setpoint);
 }
