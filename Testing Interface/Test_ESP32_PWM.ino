@@ -72,7 +72,6 @@ int long previousTimeP3=0; //time stamp
 int long previousTimeP4=0; //time stam
 
 /* Peristaltic pump analog output*/
-const int K1=23;
 const int PWMPin=23;
 
 int maxAValue=4096;
@@ -345,7 +344,7 @@ void setup() {
   adcAttachPin(P3);
   adcAttachPin(P4);
 /* Peristaltic pump analog output*/
-  pinMode(K1,OUTPUT);
+  pinMode(PWMPin,OUTPUT);
 /* Satus LED digital outputs*/
   pinMode(GNLED,OUTPUT);
   pinMode(RDLED,OUTPUT);
