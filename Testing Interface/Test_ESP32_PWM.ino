@@ -50,6 +50,9 @@ AsyncWebServer server(80); // establishing server at port 80 (HTTP protocol's de
 
 int flow=50;
 int settime=50;
+const int resolution = 12;
+const int ledChannel = 0;
+const int freq = 5000;
 
 /*Hardware specific variables*/
 /* The flow sensor analog inputs*/
@@ -72,7 +75,8 @@ int long previousTimeP3=0; //time stamp
 int long previousTimeP4=0; //time stam
 
 /* Peristaltic pump analog output*/
-const int PWMPin=23;
+const int K1=23;
+const int PWMPin=26;
 
 int maxAValue=4096;
 /* Satus LED digital outputs*/
@@ -148,14 +152,7 @@ void onWebSocketEvent(uint8_t client_num,
         {           
          Serial.printf("Toggling Pump to %u\n", pumpState);
         }
-         if (pumpState==1)
-         {
-            ledcWrite(PWMPin, setpoint);
-         }
-            else
-         {
-            ledcWrite(PWMPin, 0);
-         }
+
       }
       // Report the state of the Pump
       else if (strcmp(ID,"getPumpState")==0) 
@@ -181,10 +178,10 @@ void onWebSocketEvent(uint8_t client_num,
       else if (strcmp(ID,"sendPumpFlow")==0) 
       {
         int Recieved_message = doc["message"];
-        flow=Recieved_message;
+        setpoint=Recieved_message;
         if (DEBUG)
         {   
-        sprintf(msg_buf, "%d", flow);
+        sprintf(msg_buf, "%d", setpoint);
         Serial.printf("Sending to [%u]: %s\n", client_num, msg_buf);
         }
         webSocket.sendTXT(client_num, msg_buf);
@@ -333,7 +330,9 @@ int checkSetpoint(int setpoint)
 void setup() {
   /* The flow sensor analog inputs*/
   analogReadResolution(12); // 12 bit resolution for ADC reading
-  analogSetWidth(12); //12 bit resolution for ADC writing 4096
+  //analogSetWidth(12); //12 bit resolution for ADC writing 4096
+  ledcSetup(PWMPin, freq, resolution);
+  ledcAttachPin(PWMPin, ledChannel);
   analogSetCycles(8);// 1 analog value is read 8 times;
   analogSetSamples(1); // analog samples - immpact in sensitivity
   analogSetClockDiv(1); // analog clock divider 1-255, fastest 1
@@ -344,7 +343,7 @@ void setup() {
   adcAttachPin(P3);
   adcAttachPin(P4);
 /* Peristaltic pump analog output*/
-  pinMode(PWMPin,OUTPUT);
+  pinMode(K1,OUTPUT);
 /* Satus LED digital outputs*/
   pinMode(GNLED,OUTPUT);
   pinMode(RDLED,OUTPUT);
@@ -394,9 +393,32 @@ void setup() {
   //setpoint = analogSacale(flow,maxAValue);
 }
 
+void pumpControl(){
+         if (pumpState==1)
+         { 
+            for(int dutyCycle = 0; dutyCycle <= setpoint; dutyCycle++){
+              ledcWrite(PWMPin, setpoint);
+              delay(1);
+            }
 
+            //int delayTime=settime*1000;
+            //delay(delayTime);
+         }
+          else
+         {
+            for(int dutyCycle = setpoint; setpoint >= 0; dutyCycle--){
+            // changing the LED brightness with PWM
+              ledcWrite(PWMPin, setpoint);
+              delay(1);
+            }
+         }
+}
  
 void loop() {
   webSocket.loop();
- ledcWrite(PWMPin, setpoint);
+  
+  pumpControl();
+  //ledcWrite(PWMPin, setpoint);
+  //Serial.print("was checking ledcwrite, PWMPin value is:");
+  //Serial.println(setpoint);
 }
