@@ -130,7 +130,7 @@ function onOpen(evt) {
     console.log("Connected");
 	//doSend("getPumpState");
 	JSONmessage("getPumpState",false);
-	Setflow();
+	SetPWM();
 	Settime();
     //doSend("getPumpState");
 	//doSend("getPumpTime");
