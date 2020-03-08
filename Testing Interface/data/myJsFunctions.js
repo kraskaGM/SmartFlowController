@@ -1,5 +1,5 @@
 //Variables
-var url_socket = "ws://192.168.4.1:1337/";
+var url_socket = "ws://192.168.4.1/ws";
 var button;
 var canvas;
 var context;
