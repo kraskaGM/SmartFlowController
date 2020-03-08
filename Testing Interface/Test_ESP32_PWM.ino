@@ -16,7 +16,7 @@ https://youtu.be/fcmb_3aBfH4
   //#include <WiFi.h>
   #include <SPIFFS.h>
   #include <ESPAsyncWebServer.h>
-  #include <WebSocketsServer.h>
+  //#include <WebSocketsServer.h>
 #else
   #include <Arduino.h>
   #include <ESP8266WiFi.h>
@@ -40,13 +40,15 @@ const char *password = "Taltech2020"; // You can change it according to your eas
 const int dns_port = 53;
 const int http_port = 80;
 const int ws_port = 1337;//websocket port
-WebSocketsServer webSocket = WebSocketsServer(1337);
+
 
 char msg_buf[50];
 int pumpState = 0;
 
 /*Webserver*/
-AsyncWebServer server(80); // establishing server at port 80 (HTTP protocol's default port)
+AsyncWebServer server(http_port); // establishing server at port 80 (HTTP protocol's default port)
+//WebSocketsServer webSocket = WebSocketsServer(1337);
+AsyncWebSocket webSocket("/ws");
 
 int flow=50;
 int settime=50;
@@ -76,7 +78,7 @@ int long previousTimeP4=0; //time stam
 
 /* Peristaltic pump analog output*/
 const int K1=23;
-const int PWMPin=26;
+const int PWMPin=16;
 
 int maxAValue=4096;
 /* Satus LED digital outputs*/
@@ -103,34 +105,42 @@ int derivative=0;
 int PID;
 
 // Callback: receiving any WebSocket message
-void onWebSocketEvent(uint8_t client_num,
-                      WStype_t type,
-                      uint8_t* payload,
-                      size_t length) {
+void onWebSocketEvent(AsyncWebSocket * server, 
+                      AsyncWebSocketClient * client, 
+                      AwsEventType type, void * arg, 
+                      uint8_t *data, size_t length) {
   // Figure out the type of WebSocket event
   switch(type) 
   {
     // Client has disconnected
-    case WStype_DISCONNECTED:
-      Serial.printf("[%u] Disconnected!\n", client_num);
+    case WS_EVT_DISCONNECT:
+      Serial.printf("[%u] Disconnected!\n", client);
       break;
     // New client has connected
-    case WStype_CONNECTED:
+    case WS_EVT_CONNECT:
       {
-        IPAddress ip = webSocket.remoteIP(client_num);
-        Serial.printf("[%u] Connection from ", client_num);
-        Serial.println(ip.toString());
+        //IPAddress ip = webSocket.remoteIP(client);
+        Serial.printf("[%u] Connection from ", client);
+        //Serial.println(ip.toString());
       }
       break;
     // Handle text messages from client
-    case WStype_TEXT:
+    
+    //For everything else: do nothing
+    case WS_EVT_PONG:
     {
+      Serial.println("[%u] Message type: WS_EVT_PONG");
+      break;
+    }   
+    case WS_EVT_DATA:
+    {
+      AwsFrameInfo * info = (AwsFrameInfo*)arg;
       if (DEBUG)
       {
-        Serial.printf("[%u] Received text: %s\n", client_num, payload);
+        Serial.printf("[%u] Received text: %s\n", client, data);
       }
       StaticJsonDocument<200> doc;
-      uint8_t* input = payload;
+      uint8_t* input = data;
       DeserializationError error=deserializeJson(doc, input);
       if (error) {
         Serial.print(F("deserializeJson() failed: "));
@@ -147,12 +157,11 @@ void onWebSocketEvent(uint8_t client_num,
       // Toggle LED
       if (strcmp(ID,"togglePump")==0) 
       {  
-         pumpState = pumpState ? 0 : 1;
+        pumpState = pumpState ? 0 : 1;
         if (DEBUG)
         {           
          Serial.printf("Toggling Pump to %u\n", pumpState);
         }
-
       }
       // Report the state of the Pump
       else if (strcmp(ID,"getPumpState")==0) 
@@ -160,9 +169,10 @@ void onWebSocketEvent(uint8_t client_num,
         if (DEBUG)
         {    
         sprintf(msg_buf, "%d", pumpState);
-        Serial.printf("Sending to [%u]: %s\n", client_num, msg_buf);
+        Serial.printf("Sending to [%u]: %s\n", client, msg_buf);
         }
-        webSocket.sendTXT(client_num, msg_buf);
+        //webSocket.sendTXT(client, msg_buf);
+        client->text(msg_buf);
       }
       else if (strcmp(ID,"sendPumpTime")==0) 
       {
@@ -171,9 +181,10 @@ void onWebSocketEvent(uint8_t client_num,
         if (DEBUG)
         {         
         sprintf(msg_buf, "%d", settime);
-        Serial.printf("Sending to [%u]: %s\n", client_num, msg_buf);
+        Serial.printf("Sending to [%u]: %s\n", client, msg_buf);
         }
-        webSocket.sendTXT(client_num, msg_buf);
+        //webSocket.sendTXT(client, msg_buf);
+        client->text(msg_buf);
       }
       else if (strcmp(ID,"sendPumpFlow")==0) 
       {
@@ -182,9 +193,10 @@ void onWebSocketEvent(uint8_t client_num,
         if (DEBUG)
         {   
         sprintf(msg_buf, "%d", setpoint);
-        Serial.printf("Sending to [%u]: %s\n", client_num, msg_buf);
+        Serial.printf("Sending to [%u]: %s\n", client, msg_buf);
         }
-        webSocket.sendTXT(client_num, msg_buf);
+        client->text(msg_buf);
+        //webSocket.sendTXT(client, msg_buf);
            
       }
       // Message not recognized
@@ -195,42 +207,12 @@ void onWebSocketEvent(uint8_t client_num,
       }
       break;
     }
-    //For everything else: do nothing
-    case WStype_BIN:
-    {
-      Serial.println("[%u] Message type: WStype_BIN");
-      break;
-    }   
-    case WStype_ERROR:
-    {
-      Serial.println("[%u] Message type: WStype_ERROR");
-      break;
-    }
-    case WStype_FRAGMENT_TEXT_START:
-    {
-      Serial.println("[%u] Message type: WStype_FRAGMENT_TEXT_START");
-      break;
-    }
-    case WStype_FRAGMENT_BIN_START:
-    {
-      Serial.println("[%u] Message type: WStype_FRAGMENT_BIN_START");
-      break;
-    }
-    case WStype_FRAGMENT:
-    {
-      Serial.println("[%u] Message type: WStype_FRAGMENT");
-      break;
-    }
-    case WStype_FRAGMENT_FIN:
-    {
-      Serial.println("[%u] Message type: WStype_FRAGMENT_FIN");
-      break;
-    }
+  
     default:
     break;
   }
 } 
-
+       
 /*The files which are sent from webservers memory*/
 
 // Callback: send homepage
@@ -383,11 +365,12 @@ void setup() {
   // Handle requests for pages that do not exist
   server.onNotFound(onPageNotFound);
   // Start web server
-  server.begin();
+  
   // Start WebSocket server and assign callback
-  webSocket.begin();
+  //webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
-
+  server.addHandler(&webSocket);
+  server.begin();
   Serial.println("HTTP server started");
 
   //setpoint = analogSacale(flow,maxAValue);
@@ -397,27 +380,32 @@ void pumpControl(){
          if (pumpState==1)
          { 
             for(int dutyCycle = 0; dutyCycle <= setpoint; dutyCycle++){
-              ledcWrite(PWMPin, setpoint);
+              ledcWrite(ledChannel, setpoint);
               delay(1);
             }
 
-            //int delayTime=settime*1000;
-            //delay(delayTime);
+            int delayTime=settime*1000;
+            Serial.println("Pump runs on the max speed");
+            delay(delayTime);
          }
-          else
+          else if (pumpState==0)
          {
             for(int dutyCycle = setpoint; setpoint >= 0; dutyCycle--){
             // changing the LED brightness with PWM
-              ledcWrite(PWMPin, setpoint);
+              ledcWrite(ledChannel, setpoint);
               delay(1);
-            }
+              }
+              Serial.println("Pump is off");
+              delay(1000);
          }
 }
  
 void loop() {
-  webSocket.loop();
-  
+  //webSocket.loop();
+  //ledcWrite(ledChannel, setpoint);
   pumpControl();
+  //delay(1000);
+  //pumpControl();
   //ledcWrite(PWMPin, setpoint);
   //Serial.print("was checking ledcwrite, PWMPin value is:");
   //Serial.println(setpoint);
