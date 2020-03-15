@@ -16,6 +16,7 @@ https://youtu.be/fcmb_3aBfH4
   //#include <WiFi.h>
   #include <SPIFFS.h>
   #include <ESPAsyncWebServer.h>
+  /*
   //#include <WebSocketsServer.h>
 #else
   #include <Arduino.h>
@@ -39,10 +40,10 @@ const char *password = "Taltech2020"; // You can change it according to your eas
 
 const int dns_port = 53;
 const int http_port = 80;
-const int ws_port = 1337;//websocket port
+//const int ws_port = 1337;//websocket port
 
 
-char msg_buf[50];
+char msg_buf[15];
 int pumpState = 0;
 
 /*Webserver*/
@@ -53,20 +54,23 @@ AsyncWebSocket webSocket("/ws");
 int flow=50;
 int settime=50;
 const int resolution = 12;
-const int ledChannel = 0;
+const int ledChannel = 1;
 const int freq = 5000;
+unsigned long previousMillis = 0;
+bool notrunning = true;
+bool mrunning = true;
 
 /*Hardware specific variables*/
 /* The flow sensor analog inputs*/
-const int P1 = 26; 
+/*const int P1 = 26; 
 const int P2 = 27;
 const int P3 = 14;
 const int P4 = 12;
 
 float measuredFlowRate=50;
-
+*/
 /*Function Variables*/
-bool liguidP1=false;
+/*bool liguidP1=false;
 bool liguidP2=false;
 bool liguidP3=false;
 bool liguidP4=false;
@@ -75,34 +79,34 @@ int long previousTimeP1=0; //time stamp
 int long previousTimeP2=0; //time stamp
 int long previousTimeP3=0; //time stamp
 int long previousTimeP4=0; //time stam
-
+*/
 /* Peristaltic pump analog output*/
-const int K1=23;
-const int PWMPin=16;
+//const int K1=23;
+const int PWMPin=4;
 
-int maxAValue=4096;
+//int maxAValue=4096;
 /* Satus LED digital outputs*/
-const int GNLED = 19;
-const int RDLED = 5;
+//const int GNLED = 19;
+//const int RDLED = 5;
 
-float tubeDiameter=3.14; //mm
-int Distance1=32; //mm
-int Distance2=40; //mm
-int Distance3=32; //mm
+//float tubeDiameter=3.14; //mm
+//int Distance1=32; //mm
+//int Distance2=40; //mm
+//int Distance3=32; //mm
 
 /*PID variables*/
-int propGain=1;
-int IntegralGain=0;
-int DerGain=0;
+//int propGain=1;
+//int IntegralGain=0;
+//int DerGain=0;
 
 int setpoint=2000;
-int error=0;
-int Prev_error=0;
+//int error=0;
+//int Prev_error=0;
 
-int integral=0;
-int prev_error=0;
-int derivative=0;
-int PID;
+//int integral=0;
+//int prev_error=0;
+//int derivative=0;
+//int PID;
 
 // Callback: receiving any WebSocket message
 void onWebSocketEvent(AsyncWebSocket * server, 
@@ -139,7 +143,8 @@ void onWebSocketEvent(AsyncWebSocket * server,
       {
         Serial.printf("[%u] Received text: %s\n", client, data);
       }
-      StaticJsonDocument<200> doc;
+      //StaticJsonDocument<200> doc;
+      DynamicJsonDocument doc(200);
       uint8_t* input = data;
       DeserializationError error=deserializeJson(doc, input);
       if (error) {
@@ -173,6 +178,7 @@ void onWebSocketEvent(AsyncWebSocket * server,
         }
         //webSocket.sendTXT(client, msg_buf);
         client->text(msg_buf);
+        mrunning = true;
       }
       else if (strcmp(ID,"sendPumpTime")==0) 
       {
@@ -265,20 +271,20 @@ void onPageNotFound(AsyncWebServerRequest *request) {
                   "] HTTP GET request of " + request->url());
   } 
 }
-
+/*
 int analogSacale(int flowRate,int maxAValue)
 {
  int analogSacale = flowRate*maxAValue/100;
  return analogSacale;
-}
-
+}*/
+/*
 float flowRate(int distance, int time)
 {
  float volume = float(distance)*tubeDiameter/1000;//ml/min
  float flowRate =volume*float(time);
  return flowRate;
-}
- 
+}*/
+/*
 bool triggeThreshold(int analogSensoValue, int threshold)
 {
  if (analogSensoValue > threshold)
@@ -289,8 +295,8 @@ bool triggeThreshold(int analogSensoValue, int threshold)
   {
    return false;
   }
-}
-
+}*/
+/*
 int checkSetpoint(int setpoint)
 {
  if (setpoint>maxAValue)
@@ -307,30 +313,30 @@ int checkSetpoint(int setpoint)
  {
   return setpoint;
  }
-}
+}*/
 
 void setup() {
   /* The flow sensor analog inputs*/
-  analogReadResolution(12); // 12 bit resolution for ADC reading
+//  analogReadResolution(12); // 12 bit resolution for ADC reading
   //analogSetWidth(12); //12 bit resolution for ADC writing 4096
-  ledcSetup(PWMPin, freq, resolution);
+  ledcSetup(ledChannel, freq, resolution);
   ledcAttachPin(PWMPin, ledChannel);
-  analogSetCycles(8);// 1 analog value is read 8 times;
-  analogSetSamples(1); // analog samples - immpact in sensitivity
-  analogSetClockDiv(1); // analog clock divider 1-255, fastest 1
-  analogSetAttenuation(ADC_11db); //for all pins 3.6 volt attenuation (1V input = ADC reading of 3959)
+  //analogSetCycles(8);// 1 analog value is read 8 times;
+  //analogSetSamples(1); // analog samples - immpact in sensitivity
+  //analogSetClockDiv(1); // analog clock divider 1-255, fastest 1
+  //analogSetAttenuation(ADC_11db); //for all pins 3.6 volt attenuation (1V input = ADC reading of 3959)
   //analogSetPinAttenuation(pin, attenuation) //sets attenuation for specific pin
-  adcAttachPin(P1);
-  adcAttachPin(P2);
-  adcAttachPin(P3);
-  adcAttachPin(P4);
+//  adcAttachPin(P1);
+  //adcAttachPin(P2);
+  //adcAttachPin(P3);
+  //adcAttachPin(P4);
 /* Peristaltic pump analog output*/
-  pinMode(K1,OUTPUT);
+  //pinMode(K1,OUTPUT);
 /* Satus LED digital outputs*/
-  pinMode(GNLED,OUTPUT);
-  pinMode(RDLED,OUTPUT);
-  digitalWrite(GNLED,HIGH);
-  digitalWrite(RDLED,LOW);   
+ // pinMode(GNLED,OUTPUT);
+  //pinMode(RDLED,OUTPUT);
+  //digitalWrite(GNLED,HIGH);
+  //digitalWrite(RDLED,LOW);   
   Serial.begin(115200);
 
   // Initialize SPIFFS
@@ -375,7 +381,7 @@ void setup() {
 
   //setpoint = analogSacale(flow,maxAValue);
 }
-
+/*
 void pumpControl(){
          if (pumpState==1)
          { 
@@ -398,12 +404,72 @@ void pumpControl(){
               Serial.println("Pump is off");
               delay(1000);
          }
-}
- 
+}*/
 void loop() {
+
+  unsigned long currentMillis = millis();
+  int delayTime=settime*1000;
+  if (pumpState == 1)
+  {
+    if (!notrunning)
+    {
+      notrunning = true;
+    }
+    if (mrunning)
+    {
+      for(int dutyCycle = 0; dutyCycle <= setpoint; dutyCycle++){
+        ledcWrite(ledChannel, dutyCycle);
+        delay(1);
+        Serial.print("dutyCycle: ");
+        Serial.println(dutyCycle);
+      }
+      mrunning = false;
+      Serial.println("Pump runs on the max speed");
+    }
+    //Serial.println("Pump runs on the max speed");
+    if (currentMillis - previousMillis >= delayTime) {
+        // save the last time you blinked the LED
+        previousMillis = currentMillis;
+        for(int dutyCycle = setpoint; setpoint >= 0; dutyCycle--){
+           // changing the LED brightness with PWM
+           ledcWrite(ledChannel, dutyCycle);
+           delay(1);
+           Serial.println("waiting ...");
+         }
+     pumpState = 0;
+     mrunning = true;
+     Serial.println("Job completed");
+    } 
+  }
+  else if (notrunning  && pumpState == 0)
+  {
+    Serial.println("Pump runs on the zero speed");
+    Serial.print("setpoint: ");
+    Serial.println(setpoint);
+    //Serial.print("dutyCycle: ");
+    //Serial.println(dutyCycle);
+    
+    ledcWrite(ledChannel, 0);
+    notrunning = false;
+    mrunning = true;
+    }/*
+    for(int dutyCycle = setpoint; dutyCycle >= 0; dutyCycle--)
+    {
+    // changing the LED brightness with PWM
+      ledcWrite(ledChannel, dutyCycle);
+      delay(1);
+      Serial.print("dutyCycle: ");
+      Serial.println(dutyCycle);
+     }
+     notrunning = false;
+     mrunning = true;
+     Serial.println("Pump runs on the zero speed");
+  }*/
+
   //webSocket.loop();
   //ledcWrite(ledChannel, setpoint);
-  pumpControl();
+  //delay(10000);
+  //pumpControl();
   //delay(1000);
   //pumpControl();
   //ledcWrite(PWMPin, setpoint);
