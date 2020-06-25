@@ -93,17 +93,18 @@
 
 <p>For adding Pumps you need to know the MAC addresses of the pumps:</p>
 
-<form>
-   <input type="text" id="mcadr" name="mcadr>value="Type here">   <br>
-<input type="submit" id="CheckPump" value="Connect">
-<script>
-		document.getElementById("CheckPump").addEventListener("click", myFunction);
-		document.getElementById("CheckPump").addEventListener("touchend", myFunction);
-</script>
-
-<form>
+<form id = "myForm" onsubmit ="myFunction()">
+  Enter name: <input type="text" name="fname">
+  <input type="submit" value="Submit">
+</form>
 
 <div class="toggleBox">
+<script>
+
+var form = document.getElementById("myForm");
+function handleForm(event) { event.preventDefault(); } 
+form.addEventListener('submit', handleForm);
+</script>
 
 
 <div class="toggle">
@@ -157,8 +158,8 @@
 		 <label for="" class="onbtn" >On</label>
 		 <label for="" class="ofbtn" >Off</label> 
 		<script>
-		document.getElementById("myCheck2").addEventListener("click", ChangeOutput);
-		document.getElementById("myCheck2").addEventListener("touchend", ChangeOutput);
+		document.getElementById("myCheck2").addEventListener("click", changeOutput);
+		document.getElementById("myCheck2").addEventListener("touchend", changeOutput);
 		</script>
     </div>
   </div>  
