@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+	<title>Flow control</title>
+	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="main.css">
+	<script src="jquery.js"></script>
+	<script src="myJsFunctions.js"></script>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">Martin Grosberg</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:xd_Signature msdt:dt="string"></mso:xd_Signature>
+<mso:Order msdt:dt="string">5660300.00000000</mso:Order>
+<mso:ComplianceAssetId msdt:dt="string"></mso:ComplianceAssetId>
+<mso:TemplateUrl msdt:dt="string"></mso:TemplateUrl>
+<mso:xd_ProgID msdt:dt="string"></mso:xd_ProgID>
+<mso:SharedWithUsers msdt:dt="string"></mso:SharedWithUsers>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">Martin Grosberg</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:ContentTypeId msdt:dt="string">0x0101002A9DB9F94E987C4EAB6A9B3ECDDD85C1</mso:ContentTypeId>
+<mso:_SourceUrl msdt:dt="string"></mso:_SourceUrl>
+<mso:_SharedFileIndex msdt:dt="string"></mso:_SharedFileIndex>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+#myDIV {
+  width: 100%;
+  padding: 50px 0;
+  text-align: center;
+  background-color: lightblue;
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+	<h1>Flow control</h1>
+	<div class="slidecontainer">
+		<p>Set the Pump  from 12 to 72 ml/min</p>
+		<input type="range" min="12" max="72" value="12" class="slider" id="myRange">
+		<p>Value: <span id="demo"></span> output value</p>
+		<script>
+		document.getElementById("myRange").addEventListener("click", SetPWM);
+		document.getElementById("myRange").addEventListener("touchend", SetPWM);
+		var slider = document.getElementById("myRange");
+		var output = document.getElementById("demo");
+		output.innerHTML = slider.value;
+		slider.oninput = function() {
+		  output.innerHTML = this.value;
+		}
+		</script>
+	</div>
+	<div class="slidecontainer">
+		<p>Set the time of pumping</p>
+		<input type="range" min="0" max="120" value="60" class="slider" id="myRange2">
+		<p>Value: <span id="demo2"></span> seconds </p>
+		<script>
+		document.getElementById("myRange2").addEventListener("click", Settime);
+		document.getElementById("myRange2").addEventListener("touchend", Settime);
+		var slider2 = document.getElementById("myRange2");
+		var output2 = document.getElementById("demo2");
+		output2.innerHTML = slider2.value;
+		slider2.oninput = function() {
+		  output2.innerHTML = this.value;
+		}
+		</script>
+	</div>
+  <div class="toggleBox">
+  <p>Turn pump on/off</p>
+    <div class="toggle">
+		 <input type="checkbox" id ="myCheck">
+		 <label for="" class="onbtn" >On</label>
+		 <label for="" class="ofbtn" >Off</label> 
+		<script>
+		document.getElementById("myCheck").addEventListener("click", changeOutput);
+		document.getElementById("myCheck").addEventListener("touchend", changeOutput);
+		</script>
+    </div>
+  </div>  
+	<title> Count down timer</title>
+	<div class="container">
+		<h1 id="count" >Set Parameters</h1>
+	</div>
+	
+<p>Pump Status</p>
+<table>
+	<tr>
+		<td><canvas id="pumpStatus" width="50" height="50"></canvas></td>
+	</tr>
+</table>
+
+<h2>Add additional pumps.</h2>
+
+<p>For adding Pumps you need to know the MAC addresses of the pumps:</p>
+
+<form>
+   <input type="text" id="mcadr" name="mcadr>value="Type here">   <br>
+<input type="submit" id="CheckPump" value="Connect">
+<script>
+		document.getElementById("CheckPump").addEventListener("click", myFunction);
+		document.getElementById("CheckPump").addEventListener("touchend", myFunction);
+</script>
+
+<form>
+
+<div class="toggleBox">
+
+
+<div class="toggle">
+		 <input type="checkbox" id ="myCheck3">
+		 <label for="" class="onbtn" >On</label>
+		 <label for="" class="ofbtn" >Off</label> 
+		<script>
+		document.getElementById("myCheck3").addEventListener("click", myFunction);
+		document.getElementById("myCheck3").addEventListener("touchend", myFunction);
+		</script>
+
+</div>
+</div>  
+
+<div id="myDIV">
+<h1>Pump 2</h1>
+	<div class="slidecontainer">
+		<p>Set the Pump  from 12 to 72 ml/min</p>
+		<input type="range" min="12" max="72" value="12" class="slider" id="Pump2Slider_1">
+		<p>Value: <span id="Pump2_1"></span> output value</p>
+		<script>
+		document.getElementById("Pump2Slider_1").addEventListener("click", SetPWM);
+		document.getElementById("Pump2Slider_1").addEventListener("touchend", SetPWM);
+		var slider = document.getElementById("Pump2Slider_1");
+		var output = document.getElementById("Pump2_1");
+		output.innerHTML = slider.value;
+		slider.oninput = function() {
+		  output.innerHTML = this.value;
+		}
+		</script>
+	</div>
+	<div class="slidecontainer">
+		<p>Set the time of pumping</p>
+		<input type="range" min="0" max="120" value="60" class="slider" id="Pump2Slider_2">
+		<p>Value: <span id="Pump2_2"></span> seconds </p>
+		<script>
+		document.getElementById("Pump2Slider_2").addEventListener("click", Settime);
+		document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime);
+		var slider2 = document.getElementById("Pump2Slider_2");
+		var output2 = document.getElementById("Pump2_2");
+		output2.innerHTML = slider2.value;
+		slider2.oninput = function() {
+		  output2.innerHTML = this.value;
+		}
+		</script>
+	</div>
+  <div class="toggleBox">
+  <p>Turn pump on/off</p>
+    <div class="toggle">
+		 <input type="checkbox" id ="myCheck2">
+		 <label for="" class="onbtn" >On</label>
+		 <label for="" class="ofbtn" >Off</label> 
+		<script>
+		document.getElementById("myCheck2").addEventListener("click", ChangeOutput);
+		document.getElementById("myCheck2").addEventListener("touchend", ChangeOutput);
+		</script>
+    </div>
+  </div>  
+	<title> Count down timer</title>
+	<div class="container">
+		<h1 id="count" >Set Parameters</h1>
+	</div>
+	
+<p>Pump Status</p>
+<table>
+	<tr>
+		<td><canvas id="pumpStatus2" width="50" height="50"></canvas></td>
+	</tr>
+</table>
+</div>
+
+</body>
