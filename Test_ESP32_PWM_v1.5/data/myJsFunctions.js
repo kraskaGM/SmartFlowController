@@ -335,7 +335,7 @@ document.getElementById("Pump2Slider_1").addEventListener("click", SetPWM(2));
 document.getElementById("Pump2Slider_1").addEventListener("touchend", SetPWM(2));
 var slider3 = document.getElementById("Pump2Slider_1");
 var output3 = document.getElementById("Slider3Value");
-output.innerHTML = slider.value;
+output3.innerHTML = slider3.value;
 slider3.oninput = function() {
   output3.innerHTML = this.value;
 }
@@ -345,7 +345,7 @@ document.getElementById("Pump2Slider_2").addEventListener("click", Settime);
 document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime);
 var slider4 = document.getElementById("Pump2Slider_2");
 var output4 = document.getElementById("Slider4Value");
-output4.innerHTML = slider2.value;
+output4.innerHTML = slider4.value;
 slider4.oninput = function() {
   output4.innerHTML = this.value;
 }
@@ -362,7 +362,7 @@ document.getElementById("Pump3Slider_1").addEventListener("click", SetPWM(3));
 document.getElementById("Pump3Slider_1").addEventListener("touchend", SetPWM(3));
 var slider5 = document.getElementById("Pump3Slider_1");
 var output5 = document.getElementById("Slider5Value");
-output5.innerHTML = slider.value;
+output5.innerHTML = slider5.value;
 slider5.oninput = function() {
   output5.innerHTML = this.value;
 }
@@ -371,9 +371,9 @@ document.getElementById("Pump3Slider_2").addEventListener("click", Settime);
 document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime);
 var slider6 = document.getElementById("Pump3Slider_2");
 var output6 = document.getElementById("Slider6Value");
-output6.innerHTML = slider2.value;
+output6.innerHTML = slider6.value;
 slider6.oninput = function() {
-output26.innerHTML = this.value;
+output6.innerHTML = this.value;
 }
 
 //Listeners 6
