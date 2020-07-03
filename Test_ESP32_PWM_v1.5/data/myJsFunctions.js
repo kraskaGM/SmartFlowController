@@ -50,73 +50,167 @@ function mlmintoAnalog(input)
 	return Math.round(calculate);
 }
 // Called whenever the HTML button is pressed
-function changeOutput() {
-	onPress();
-	counter();
+function changeOutput(input1, input2) {
+	onPress(input1);
+	counter(input2);
 }
 
-function counter()
+function counter(input)
 {
-	var x = document.getElementById("myCheck").checked;
-	var y = document.getElementById("Pump1Slider_2").value;
-	if (x==true) 
-	{		  
-		var counter = y;
-		console.log("Pump is on");
-		context.fillStyle = "red";
-		context.fill();
-		setInterval(function()
-		{
-			counter--;
-			x = document.getElementById("myCheck").checked;				
-			if (counter > 0 & x==true)
+	switch(input) {
+	case 1:
+		var x = document.getElementById("myCheck1").checked;
+		var y = document.getElementById("Pump1Slider_2").value;
+		if (x==true) 
+		{		  
+			var counter = y;
+			console.log("Pump is on");
+			context.fillStyle = "red";
+			context.fill();
+			setInterval(function()
 			{
-				id = document.getElementById("count");
-				id.innerHTML=counter;
-			}
-			else if (counter == 0 & x==true)
-			{
-				id.innerHTML="COMPLETE";
-				console.log("Pump finished job");
-				context.fillStyle = "green";
-				context.fill();
-			$(document).ready(function()
-			{
-				$("#myCheck").prop("checked", false);
-			});
+				counter--;
+				x = document.getElementById("myCheck1").checked;				
+				if (counter > 0 & x==true)
+				{
+					id = document.getElementById("count1");
+					id.innerHTML=counter;
+				}
+				else if (counter == 0 & x==true)
+				{
+					id.innerHTML="COMPLETE";
+					console.log("Pump finished job");
+					context.fillStyle = "green";
+					context.fill();
+				$(document).ready(function()
+				{
+					$("#myCheck1").prop("checked", false);
+				});
 
-			}
-			else if (x==false) 
+				}
+				else if (x==false) 
+				{
+					counter = document.getElementById("Pump1Slider_2").value;
+					id.innerHTML="STOPPED";
+					console.log("Pump is off");
+					context.fillStyle = "black";
+					context.fill();
+				}
+			},1000);
+		}
+		break;
+	case 2:
+		var x = document.getElementById("myChec2").checked;
+		var y = document.getElementById("Pump2Slider_2").value;
+		if (x==true) 
+		{		  
+			var counter = y;
+			console.log("Pump is on");
+			context.fillStyle = "red";
+			context.fill();
+			setInterval(function()
 			{
-				counter = document.getElementById("Pump1Slider_2").value;
-				id.innerHTML="STOPPED";
-				console.log("Pump is off");
-				context.fillStyle = "black";
-				context.fill();
-			}
-		},1000);
+				counter--;
+				x = document.getElementById("myCheck2").checked;				
+				if (counter > 0 & x==true)
+				{
+					id = document.getElementById("count2");
+					id.innerHTML=counter;
+				}
+				else if (counter == 0 & x==true)
+				{
+					id.innerHTML="COMPLETE";
+					console.log("Pump finished job");
+					context.fillStyle = "green";
+					context.fill();
+				$(document).ready(function()
+				{
+					$("#myCheck2").prop("checked", false);
+				});
+
+				}
+				else if (x==false) 
+				{
+					counter = document.getElementById("Pump1Slider_2").value;
+					id.innerHTML="STOPPED";
+					console.log("Pump is off");
+					context.fillStyle = "black";
+					context.fill();
+				}
+			},1000);
+		}
+		break;
+	case 3:
+		var x = document.getElementById("myCheck3").checked;
+		var y = document.getElementById("Pump3Slider_2").value;
+		if (x==true) 
+		{		  
+			var counter = y;
+			console.log("Pump is on");
+			context.fillStyle = "red";
+			context.fill();
+			setInterval(function()
+			{
+				counter--;
+				x = document.getElementById("myCheck3").checked;				
+				if (counter > 0 & x==true)
+				{
+					id = document.getElementById("count3");
+					id.innerHTML=counter;
+				}
+				else if (counter == 0 & x==true)
+				{
+					id.innerHTML="COMPLETE";
+					console.log("Pump finished job");
+					context.fillStyle = "green";
+					context.fill();
+				$(document).ready(function()
+				{
+					$("#myCheck").prop("checked", false);
+				});
+
+				}
+				else if (x==false) 
+				{
+					counter = document.getElementById("Pump3Slider_2").value;
+					id.innerHTML="STOPPED";
+					console.log("Pump is off");
+					context.fillStyle = "black";
+					context.fill();
+				}
+			},1000);
 	}
+	break;
+	default:
+		break;
+	}
+	
 }
 
-function ShowHide() {
-  var x = document.getElementById("myDIV");
-  if (x.style.display === "block") {
-    x.style.display ="none" ;	
-  } else {
-	x.style.display = "block";
+function ShowHide(input) {
+	switch(input) {
+	  case 1:
+		  var x = document.getElementById("myDIV");
+		  if (x.style.display === "block") {
+		    x.style.display ="none" ;	
+		  } else {
+			x.style.display = "block";
+		break;
+	  case 2:
+		  var x = document.getElementById("myDIV2");
+		  if (x.style.display === "block") {
+			x.style.display ="none" ;
+		  } else {
+			x.style.display = "block";	
+		  }
+		break;
+	  default:
+		break;
+	}	
+
 
   }
 }
-function ShowHide2() {
-  var x = document.getElementById("myDIV2");
-  if (x.style.display === "block") {
-	x.style.display ="none" ;
-  } else {
-	x.style.display = "block";	
-  }
-}
-
-
 
 function JSONmessage(var_ObjectID,var_message)
 {
@@ -208,8 +302,8 @@ function Settime(input) {
 function init() {
 	
     // Assign page elements to variables
-    button = document.getElementById("myCheck");
-    canvas = document.getElementById("pumpStatus");
+    button = document.getElementById("myCheck1");
+    canvas = document.getElementById("pumpStatus1");
     
     // Draw circle in canvas
     context = canvas.getContext("2d");
@@ -240,10 +334,10 @@ function onOpen(evt) {
     // Log connection state
     console.log("Connected");
 	//doSend("getPumpState");
-	JSONmessage("getPumpState",false);
+	JSONmessage("getPumpState1",false);
 	SetPWM(1);
 	Settime(1);
-    //doSend("getPumpState");
+    	//doSend("getPumpState");
 	//doSend("getPumpTime");
 	//doSend("getPumpFlow");
 }
@@ -290,10 +384,26 @@ function doSend(message) {
 	conn.send(message);
 }
  
-function onPress() {
+function onPress(input) {
     //doSend("togglePump");
-	JSONmessage("togglePump",false,);
-    JSONmessage("getPumpState",false);
+
+		switch(input) {
+	  case 1:
+		JSONmessage("togglePump1",false,);
+		JSONmessage("getPumpState1",false);
+		break;
+	  case 2:
+		JSONmessage("togglePump2",false,);
+		JSONmessage("getPumpState2",false);
+		break;
+	  case 3:
+		JSONmessage("togglePump3",false,);
+		JSONmessage("getPumpState3",false);
+		break;
+	  default:
+		JSONmessage("None",0);
+		break;
+	}
 }	
 // Call the init function as soon as the page loads
 window.addEventListener("load", init, false);
@@ -319,11 +429,11 @@ slider2.oninput = function()
   output2.innerHTML = this.value;
 }
 // Pump 1 Listeners 3
-document.getElementById("myCheck").addEventListener("click", changeOutput);
-document.getElementById("myCheck").addEventListener("touchend", changeOutput);
+document.getElementById("myCheck1").addEventListener("click", changeOutput(1,1));
+document.getElementById("myCheck1").addEventListener("touchend", changeOutput(1,1));
 
 //Pump 1  Disable refresh
-var form = document.getElementById("myForm");
+var form = document.getElementById("myForm1");
 function handleForm(event) 
 { 
 	event.preventDefault(); 
@@ -350,8 +460,9 @@ slider4.oninput = function() {
   output4.innerHTML = this.value;
 }
 // Pump 2 Listener 3
-document.getElementById("myCheck2").addEventListener("click", changeOutput);
-document.getElementById("myCheck2").addEventListener("touchend", changeOutput);
+document.getElementById("myCheck2").addEventListener("click", changeOutput(2,2));
+document.getElementById("myCheck2").addEventListener("touchend", changeOutput(2,2));
+	
 // Disable refresh 2
 var form2 = document.getElementById("myForm2");
 function handleForm(event) { event.preventDefault(); } 
@@ -377,6 +488,6 @@ output6.innerHTML = this.value;
 }
 
 //Listeners 6
-document.getElementById("myCheck4").addEventListener("click", changeOutput);
-document.getElementById("myCheck4").addEventListener("touchend", changeOutput);
+document.getElementById("myCheck3").addEventListener("click", changeOutput(3,3));
+document.getElementById("myCheck3").addEventListener("touchend", changeOutput(3,3));
 }
