@@ -58,7 +58,7 @@ function changeOutput() {
 function counter()
 {
 	var x = document.getElementById("myCheck").checked;
-	var y = document.getElementById("myRange2").value;
+	var y = document.getElementById("Pump1Slider_2").value;
 	if (x==true) 
 	{		  
 		var counter = y;
@@ -88,7 +88,7 @@ function counter()
 			}
 			else if (x==false) 
 			{
-				counter = document.getElementById("myRange2").value;
+				counter = document.getElementById("Pump1Slider_2").value;
 				id.innerHTML="STOPPED";
 				console.log("Pump is off");
 				context.fillStyle = "black";
@@ -98,14 +98,24 @@ function counter()
 	}
 }
 
-function myFunction() {
+function ShowHide() {
   var x = document.getElementById("myDIV");
-  if (x.style.display === "none") {
-    x.style.display = "block";
+  if (x.style.display === "block") {
+    x.style.display ="none" ;	
   } else {
-    x.style.display = "none";
+	x.style.display = "block";
+
   }
 }
+function ShowHide2() {
+  var x = document.getElementById("myDIV2");
+  if (x.style.display === "block") {
+	x.style.display ="none" ;
+  } else {
+	x.style.display = "block";	
+  }
+}
+
 
 
 function JSONmessage(var_ObjectID,var_message)
@@ -134,7 +144,7 @@ function JSONmessage(var_ObjectID,var_message)
 }
 
 function SetPWM() {
-	var Pumpflow = document.getElementById("myRange").value;
+	var Pumpflow = document.getElementById("Pump1Slider_1").value;
 	var Conversion =mlmintoAnalog(Pumpflow);
 	JSONmessage("sendPumpFlow",Conversion);
 	/*
@@ -148,7 +158,7 @@ function SetPWM() {
 }
 	
 function Settime() {
-	var Pumptime = document.getElementById("myRange2").value;
+	var Pumptime = document.getElementById("Pump1Slider_2").value;
 	JSONmessage("sendPumpTime",Pumptime,);
 	/*
 	var JSONmessage=
@@ -253,4 +263,86 @@ function onPress() {
 }	
 // Call the init function as soon as the page loads
 window.addEventListener("load", init, false);
+window.onload=function(){
+// Pump 1 Listeners 1
+document.getElementById("Pump1Slider_1").addEventListener("click", SetPWM);
+document.getElementById("Pump1Slider_1").addEventListener("touchend", SetPWM);
+var slider = document.getElementById("Pump1Slider_1");
+var output = document.getElementById("Slider1Value");
+output.innerHTML = slider.value;
+slider.oninput = function() 
+{
+  output.innerHTML = this.value;
+}
+// Pump 1 Listeners 2
+document.getElementById("Pump1Slider_2").addEventListener("click", Settime);
+document.getElementById("Pump1Slider_2").addEventListener("touchend", Settime);
+var slider2 = document.getElementById("Pump1Slider_2");
+var output2 = document.getElementById("Slider2Value");
+output2.innerHTML = slider2.value;
+slider2.oninput = function() 
+{
+  output2.innerHTML = this.value;
+}
+// Pump 1 Listeners 3
+document.getElementById("myCheck").addEventListener("click", changeOutput);
+document.getElementById("myCheck").addEventListener("touchend", changeOutput);
 
+//Pump 1  Disable refresh
+var form = document.getElementById("myForm");
+function handleForm(event) 
+{ 
+	event.preventDefault(); 
+} 
+form.addEventListener('submit', handleForm);
+
+// Pump 2 Listeners 1
+document.getElementById("Pump2Slider_1").addEventListener("click", SetPWM);
+document.getElementById("Pump2Slider_1").addEventListener("touchend", SetPWM);
+var slider3 = document.getElementById("Pump2Slider_1");
+var output3 = document.getElementById("Slider3Value");
+output.innerHTML = slider.value;
+slider3.oninput = function() {
+  output3.innerHTML = this.value;
+}
+
+//Pump 2 Listeners 2
+document.getElementById("Pump2Slider_2").addEventListener("click", Settime);
+document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime);
+var slider4 = document.getElementById("Pump2Slider_2");
+var output4 = document.getElementById("Slider4Value");
+output4.innerHTML = slider2.value;
+slider4.oninput = function() {
+  output4.innerHTML = this.value;
+}
+// Pump 2 Listener 3
+document.getElementById("myCheck2").addEventListener("click", changeOutput);
+document.getElementById("myCheck2").addEventListener("touchend", changeOutput);
+// Disable refresh 2
+var form2 = document.getElementById("myForm2");
+function handleForm(event) { event.preventDefault(); } 
+form2.addEventListener('submit', handleForm);
+
+// Pump 3 listeners 1
+document.getElementById("Pump3Slider_1").addEventListener("click", SetPWM);
+document.getElementById("Pump3Slider_1").addEventListener("touchend", SetPWM);
+var slider5 = document.getElementById("Pump3Slider_1");
+var output5 = document.getElementById("Slider5Value");
+output5.innerHTML = slider.value;
+slider5.oninput = function() {
+  output5.innerHTML = this.value;
+}
+// Pump 3 listeners 2
+document.getElementById("Pump3Slider_2").addEventListener("click", Settime);
+document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime);
+var slider6 = document.getElementById("Pump3Slider_2");
+var output6 = document.getElementById("Slider6Value");
+output6.innerHTML = slider2.value;
+slider6.oninput = function() {
+output26.innerHTML = this.value;
+}
+
+//Listeners 6
+document.getElementById("myCheck4").addEventListener("click", changeOutput);
+document.getElementById("myCheck4").addEventListener("touchend", changeOutput);
+}
