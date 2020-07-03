@@ -115,7 +115,7 @@ void onWebSocketEvent(AsyncWebSocket * server,
         Serial.printf("[%u] Received ObjectID: %s\n", ID);
       }
       // Toggle LED
-      if (strcmp(ID,"togglePump")==0) 
+      if (strcmp(ID,"togglePump1")==0) 
       {  
         pumpState = pumpState ? 0 : 1;
         if (DEBUG)
@@ -124,7 +124,7 @@ void onWebSocketEvent(AsyncWebSocket * server,
         }
       }
       // Report the state of the Pump
-      else if (strcmp(ID,"getPumpState")==0) 
+      else if (strcmp(ID,"getPumpState1")==0) 
       {
         if (DEBUG)
         {    
@@ -135,7 +135,7 @@ void onWebSocketEvent(AsyncWebSocket * server,
         client->text(msg_buf);
         mrunning = true;
       }
-      else if (strcmp(ID,"sendPumpTime")==0) 
+      else if (strcmp(ID,"sendPumpTime1")==0) 
       {
         int Recieved_message = doc["message"];
         settime=Recieved_message;
@@ -147,7 +147,7 @@ void onWebSocketEvent(AsyncWebSocket * server,
         //webSocket.sendTXT(client, msg_buf);
         client->text(msg_buf);
       }
-      else if (strcmp(ID,"sendPumpFlow")==0) 
+      else if (strcmp(ID,"sendPumpFlow1")==0) 
       {
         int Recieved_message = doc["message"];
         setpoint=Recieved_message;
