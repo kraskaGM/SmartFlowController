@@ -309,8 +309,8 @@ slider.oninput = function()
   output.innerHTML = this.value;
 }
 // Pump 1 Listeners 2
-document.getElementById("Pump1Slider_2").addEventListener("click", Settime);
-document.getElementById("Pump1Slider_2").addEventListener("touchend", Settime);
+document.getElementById("Pump1Slider_2").addEventListener("click", Settime(1));
+document.getElementById("Pump1Slider_2").addEventListener("touchend", Settime(1));
 var slider2 = document.getElementById("Pump1Slider_2");
 var output2 = document.getElementById("Slider2Value");
 output2.innerHTML = slider2.value;
@@ -341,8 +341,8 @@ slider3.oninput = function() {
 }
 
 //Pump 2 Listeners 2
-document.getElementById("Pump2Slider_2").addEventListener("click", Settime);
-document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime);
+document.getElementById("Pump2Slider_2").addEventListener("click", Settime(1));
+document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime(1));
 var slider4 = document.getElementById("Pump2Slider_2");
 var output4 = document.getElementById("Slider4Value");
 output4.innerHTML = slider4.value;
@@ -367,8 +367,8 @@ slider5.oninput = function() {
   output5.innerHTML = this.value;
 }
 // Pump 3 listeners 2
-document.getElementById("Pump3Slider_2").addEventListener("click", Settime);
-document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime);
+document.getElementById("Pump3Slider_2").addEventListener("click", Settime(1));
+document.getElementById("Pump2Slider_2").addEventListener("touchend", Settime(1));
 var slider6 = document.getElementById("Pump3Slider_2");
 var output6 = document.getElementById("Slider6Value");
 output6.innerHTML = slider6.value;
