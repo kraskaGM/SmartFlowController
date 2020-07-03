@@ -84,7 +84,7 @@ function counter(input)
 					context.fill();
 				$(document).ready(function()
 				{
-					$("#myCheck1").prop("checked", false);
+					$("#myCheck").prop("checked", false);
 				});
 
 				}
@@ -125,7 +125,7 @@ function counter(input)
 					context.fill();
 				$(document).ready(function()
 				{
-					$("#myCheck2").prop("checked", false);
+					$("#myCheck").prop("checked", false);
 				});
 
 				}
