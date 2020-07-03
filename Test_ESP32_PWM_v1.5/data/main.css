@@ -96,5 +96,19 @@ label {
   right: 14px;
   color: #34495e;
 }
-
+#myDIV {
+  width: 100%;
+  padding: 50px 0;
+  text-align: center;
+  background-color: lightblue;
+  margin-top: 20px;
+  display: none;
+}
+#myDIV2 {
+  width: 100%;
+  padding: 50px 0;
+  text-align: center;
+  margin-top: 20px;
+  display: none;
+}
 
