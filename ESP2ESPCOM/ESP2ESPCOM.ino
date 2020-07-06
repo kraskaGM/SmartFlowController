@@ -29,7 +29,7 @@ https://youtu.be/fcmb_3aBfH4
 
 #define DEBUG true
 #define DEBUG2 false
-
+#include <esp_now.h>
 /*Communication specific variable*/
 /* Set these to your desired credentials. */
 const char *ssid = "SmartFlowController"; // You can change it according to your ease
@@ -64,9 +64,35 @@ bool mrunning = true;
 
 const int PWMPin=26;
 int setpoint=2000;
+void function extractMAC(String Address,uint8_t broadcastAddress[])
+{
+  for(int i;i);
+}
+
+// REPLACE WITH YOUR RECEIVER MAC Address
+uint8_t broadcastAddress1[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+uint8_t broadcastAddress2[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+// Structure example to send data
+// Must match the receiver structure
+typedef struct struct_message {
+  char a[32];
+  int b;
+  float c;
+  String d;
+  bool e;
+} struct_message;
+
+
 PairWithDevice(String Address)
 {
-   
+ // Init ESP-NOW
+ if (esp_now_init() != ESP_OK) 
+ {
+   Serial.println("Error initializing ESP-NOW");
+   return;
+ }
+ 
+   esp_now_add_peer();
 }
 // Callback: receiving any WebSocket message
 void onWebSocketEvent(AsyncWebSocket * server, 
