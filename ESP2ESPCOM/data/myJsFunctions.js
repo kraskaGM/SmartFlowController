@@ -17,8 +17,8 @@ var F=[3594,61.268];
 var G=[4095,72.93];
 
 //MAC Addresses
-var MACAdress2=[0x30,0xAE,0xA4,0x07,0x0D,0x64];
-var MACAdress3=[0,0,0,0,0];
+var MACAdress2=[0xff,0xff,0xff,0xff,0xff];
+var MACAdress3=[0xff,0xff,0xff,0xff,0xff];
 //Converting ml/min to analog value
 //Calibration coefficiant
 var calibration = 100;
@@ -63,25 +63,30 @@ function ConnectionStatus(input)
 	switch(input) {
 		case 1:
 		{
-			MACAdress2[0]= document.getElementById("p2MAC1");
-			MACAdress2[1]= document.getElementById("p2MAC2");
-			MACAdress2[2]= document.getElementById("p2MAC3");
-			MACAdress2[3]= document.getElementById("p2MAC4");
-			MACAdress2[4]= document.getElementById("p2MAC5");		
+			MACAdress2[0]= document.getElementById("p2MAC1").value;
+			MACAdress2[1]= document.getElementById("p2MAC2").value;
+			MACAdress2[2]= document.getElementById("p2MAC3").value;
+			MACAdress2[3]= document.getElementById("p2MAC4").value;
+			MACAdress2[4]= document.getElementById("p2MAC5").value;	
+			
+			console.log(MACAdress2);
 			//var field = document.getElementById("ConnectionStatus1").value;				
 			id = document.getElementById("ConnectionStatus1");
 			id.innerHTML="Connection established";
+		break;
 		}
 		case 2: 
 		{
-			MACAdress3[0]= document.getElementById("p3MAC1");
-			MACAdress3[1]= document.getElementById("p3MAC2");
-			MACAdress3[2]= document.getElementById("p3MAC3");
-			MACAdress3[3]= document.getElementById("p3MAC4");
-			MACAdress3[4]= document.getElementById("p3MAC5");			
+			MACAdress3[0]= document.getElementById("p3MAC1").value;
+			MACAdress3[1]= document.getElementById("p3MAC2").value;
+			MACAdress3[2]= document.getElementById("p3MAC3").value;
+			MACAdress3[3]= document.getElementById("p3MAC4").value;
+			MACAdress3[4]= document.getElementById("p3MAC5").value;	
+			console.log(MACAdress3);		
 			//var field = document.getElementById("ConnectionStatus1").value;				
 			id = document.getElementById("ConnectionStatus2");
-			id.innerHTML="Connection established";			
+			id.innerHTML="Connection established";	
+		break;		
 		}
 	}
 }
@@ -220,8 +225,6 @@ function counter(input)
 function ShowHide(input) {
 	switch(input) {
 	  case 1:
-		  //var field = document.getElementById("myForm1").value;
-
 		  ConnectionStatus(1);
 		  JSONmessage("sendMACAdress2",MACAdress2);
 		  var x = document.getElementById("myDIV");
@@ -232,8 +235,6 @@ function ShowHide(input) {
 	  }
 		break;
 	  case 2:
-		  //var field = document.getElementById("myForm2").value;
-
 		  ConnectionStatus(2);
 		  JSONmessage("sendMACAdress3",MACAdress3);	
 		  var x = document.getElementById("myDIV2");
