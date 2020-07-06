@@ -51,6 +51,9 @@ AsyncWebServer server(http_port); // establishing server at port 80 (HTTP protoc
 //WebSocketsServer webSocket = WebSocketsServer(1337);
 AsyncWebSocket webSocket("/ws");
 
+String MACAdress1;
+String MACAdress2;
+
 int flow=50;
 int settime=50;
 const int resolution = 12;
@@ -61,7 +64,10 @@ bool mrunning = true;
 
 const int PWMPin=26;
 int setpoint=2000;
-
+PairWithDevice(String Address)
+{
+   
+}
 // Callback: receiving any WebSocket message
 void onWebSocketEvent(AsyncWebSocket * server, 
                       AsyncWebSocketClient * client, 
@@ -158,6 +164,19 @@ void onWebSocketEvent(AsyncWebSocket * server,
         client->text(msg_buf);
         //webSocket.sendTXT(client, msg_buf);
            
+      }
+      else if (strcmp(ID,"sendMACAdress1")==0) 
+      {
+        int Recieved_message = doc["message"];
+        MACAdress1=Recieved_message;
+        if (DEBUG)
+        {   
+        sprintf(msg_buf, "%d", MACAdress1);
+        Serial.printf("Sending to [%u]: %s\n", client, msg_buf);
+        }
+        client->text(msg_buf);
+        //webSocket.sendTXT(client, msg_buf);
+        PairWithDevice(MACAdress1);   
       }
       // Message not recognized
       else 
