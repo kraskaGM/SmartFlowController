@@ -51,8 +51,8 @@ AsyncWebServer server(http_port); // establishing server at port 80 (HTTP protoc
 //WebSocketsServer webSocket = WebSocketsServer(1337);
 AsyncWebSocket webSocket("/ws");
 
-String MACAdress1;
-String MACAdress2;
+String MACAdress3;
+String MACAdress3;
 
 int flow=50;
 int settime=50;
@@ -82,18 +82,54 @@ typedef struct struct_message {
   bool e;
 } struct_message;
 
+// Create a struct_message called myData
+struct_message myData;
 
-PairWithDevice(String Address)
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+}
+
+PairWithDevice(uint8_t Address)
 {
- // Init ESP-NOW
+  // Init ESP-NOW
  if (esp_now_init() != ESP_OK) 
  {
    Serial.println("Error initializing ESP-NOW");
    return;
+  // Once ESPNow is successfully Init, we will register for Send CB to
+  // get the status of Trasnmitted packet
+  esp_now_register_send_cb(OnDataSent);
+  // Register peer
+  esp_now_peer_info_t peerInfo;
+  memcpy(peerInfo.peer_addr, Address, 6);
+  peerInfo.channel = 0;  
+  peerInfo.encrypt = false;
+   // Add peer        
+  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+    Serial.println("Failed to add peer");
+    return;
+  }
+    // Set values to send
+  strcpy(myData.a, "THIS IS A CHAR");
+  myData.b = random(1,20);
+  myData.c = 1.2;
+  myData.d = "Hello";
+  myData.e = false;
+  // Send message via ESP-NOW
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+   
+  if (result == ESP_OK) {
+    Serial.println("Sent with success");
+  }
+  else {
+    Serial.println("Error sending the data");
+  }
+  delay(2000);
  }
- 
-   esp_now_add_peer();
 }
+
+
 // Callback: receiving any WebSocket message
 void onWebSocketEvent(AsyncWebSocket * server, 
                       AsyncWebSocketClient * client, 
@@ -191,18 +227,18 @@ void onWebSocketEvent(AsyncWebSocket * server,
         //webSocket.sendTXT(client, msg_buf);
            
       }
-      else if (strcmp(ID,"sendMACAdress1")==0) 
+      else if (strcmp(ID,"sendMACAdress2")==0) 
       {
-        int Recieved_message = doc["message"];
-        MACAdress1=Recieved_message;
+        uint8_t Recieved_message[] = doc["message"];
+        broadcastAddress1=Recieved_message;
         if (DEBUG)
         {   
-        sprintf(msg_buf, "%d", MACAdress1);
+        sprintf(msg_buf, "%d", broadcastAddress1);
         Serial.printf("Sending to [%u]: %s\n", client, msg_buf);
         }
         client->text(msg_buf);
         //webSocket.sendTXT(client, msg_buf);
-        PairWithDevice(MACAdress1);   
+        PairWithDevice(broadcastAddress1);   
       }
       // Message not recognized
       else 
