@@ -17,7 +17,7 @@ var F=[3594,61.268];
 var G=[4095,72.93];
 
 //MAC Addresses
-var MACAdress2=[30,AE,A4,07,0D,64];
+var MACAdress2=[0x30,0xAE,0xA4,0x07,0x0D,0x64];
 var MACAdress3=[0,0,0,0,0];
 //Converting ml/min to analog value
 //Calibration coefficiant
