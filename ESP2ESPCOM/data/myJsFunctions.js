@@ -54,6 +54,22 @@ function changeOutput(input1, input2) {
 	onPress(input1);
 	counter(input2);
 }
+function ConnectionStatus(input)
+{
+	switch(input) {
+	case 1:
+	{
+		//var field = document.getElementById("ConnectionStatus1").value;				
+		id = document.getElementById("ConnectionStatus1");
+		id.innerHTML="Connection established";
+	}
+	case: 2
+	{
+		//var field = document.getElementById("ConnectionStatus1").value;				
+		id = document.getElementById("ConnectionStatus2");
+		id.innerHTML="Connection established";			
+	}
+}
 
 function counter(input)
 {
@@ -191,7 +207,9 @@ function ShowHide(input) {
 	switch(input) {
 	  case 1:
 		  var field = document.getElementById("myForm1").value;
-		  JSONmessage("sendMACAdress1",field);	
+		  JSONmessage("sendMACAdress1",field);
+		  ConnectionStatus(1);
+
 		  var x = document.getElementById("myDIV");
 		  if (x.style.display === "block") {
 		    x.style.display ="none" ;	
@@ -202,6 +220,7 @@ function ShowHide(input) {
 	  case 2:
 		  var field = document.getElementById("myForm2").value;
 		  JSONmessage("sendMACAdress2",field);
+		  ConnectionStatus(2);
 		  var x = document.getElementById("myDIV2");
 		  if (x.style.display === "block") {
 			x.style.display ="none" ;
