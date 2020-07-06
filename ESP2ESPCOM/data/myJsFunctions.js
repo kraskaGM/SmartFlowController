@@ -195,7 +195,7 @@ function ShowHide(input) {
 		    x.style.display ="none" ;	
 		  } else {
 			x.style.display = "block";
-		  }
+	  }
 		break;
 	  case 2:
 		  var x = document.getElementById("myDIV2");
@@ -208,6 +208,8 @@ function ShowHide(input) {
 	  default:
 		break;
 	}	
+
+
   }
 
 
@@ -403,10 +405,27 @@ function onPress(input) {
 		JSONmessage("None",0);
 		break;
 	}
-}	
+}
+//Refresh submit disable
+function handleForm(event) 
+{ 
+	event.preventDefault();
+} 
+
+	
 // Call the init function as soon as the page loads
 window.addEventListener("load", init, false);
 window.onload=function(){
+
+//Pump 1  Disable refresh
+var form = document.getElementById("myForm1");
+form.addEventListener('submit', handleForm);
+
+
+// Disable refresh 2
+var form2 = document.getElementById("myForm2");
+form2.addEventListener('submit', handleForm);
+
 // Pump 1 Listeners 1
 document.getElementById("Pump1Slider_1").addEventListener("click", SetPWM(1));
 document.getElementById("Pump1Slider_1").addEventListener("touchend", SetPWM(1));
@@ -431,13 +450,7 @@ slider2.oninput = function()
 document.getElementById("myCheck1").addEventListener("click", changeOutput(1,1));
 document.getElementById("myCheck1").addEventListener("touchend", changeOutput(1,1));
 
-//Pump 1  Disable refresh
-var form = document.getElementById("myForm1");
-function handleForm(event) 
-{ 
-	event.preventDefault(); 
-} 
-form.addEventListener('submit', handleForm);
+
 
 // Pump 2 Listeners 1
 document.getElementById("Pump2Slider_1").addEventListener("click", SetPWM(2));
@@ -462,10 +475,6 @@ slider4.oninput = function() {
 document.getElementById("myCheck2").addEventListener("click", changeOutput(2,2));
 document.getElementById("myCheck2").addEventListener("touchend", changeOutput(2,2));
 	
-// Disable refresh 2
-var form2 = document.getElementById("myForm2");
-function handleForm(event) { event.preventDefault(); } 
-form2.addEventListener('submit', handleForm);
 
 // Pump 3 listeners 1
 document.getElementById("Pump3Slider_1").addEventListener("click", SetPWM(3));
