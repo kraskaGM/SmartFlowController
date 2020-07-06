@@ -190,6 +190,8 @@ function counter(input)
 function ShowHide(input) {
 	switch(input) {
 	  case 1:
+		  var field = document.getElementById("myForm1").value;
+		  JSONmessage("sendMACAdress1",field);	
 		  var x = document.getElementById("myDIV");
 		  if (x.style.display === "block") {
 		    x.style.display ="none" ;	
@@ -198,6 +200,8 @@ function ShowHide(input) {
 	  }
 		break;
 	  case 2:
+		  var field = document.getElementById("myForm2").value;
+		  JSONmessage("sendMACAdress2",field);
 		  var x = document.getElementById("myDIV2");
 		  if (x.style.display === "block") {
 			x.style.display ="none" ;
