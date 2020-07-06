@@ -195,6 +195,7 @@ function ShowHide(input) {
 		    x.style.display ="none" ;	
 		  } else {
 			x.style.display = "block";
+		  }
 		break;
 	  case 2:
 		  var x = document.getElementById("myDIV2");
@@ -207,10 +208,8 @@ function ShowHide(input) {
 	  default:
 		break;
 	}	
-
-
   }
-}
+
 
 function JSONmessage(var_ObjectID,var_message)
 {
