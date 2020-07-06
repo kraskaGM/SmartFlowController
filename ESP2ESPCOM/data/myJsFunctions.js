@@ -57,20 +57,20 @@ function changeOutput(input1, input2) {
 function ConnectionStatus(input)
 {
 	switch(input) {
-	case 1:
-	{
-		//var field = document.getElementById("ConnectionStatus1").value;				
-		id = document.getElementById("ConnectionStatus1");
-		id.innerHTML="Connection established";
-	}
-	case: 2
-	{
-		//var field = document.getElementById("ConnectionStatus1").value;				
-		id = document.getElementById("ConnectionStatus2");
-		id.innerHTML="Connection established";			
+		case 1:
+		{
+			//var field = document.getElementById("ConnectionStatus1").value;				
+			id = document.getElementById("ConnectionStatus1");
+			id.innerHTML="Connection established";
+		}
+		case 2: 
+		{
+			//var field = document.getElementById("ConnectionStatus1").value;				
+			id = document.getElementById("ConnectionStatus2");
+			id.innerHTML="Connection established";			
+		}
 	}
 }
-
 function counter(input)
 {
 	switch(input) {
