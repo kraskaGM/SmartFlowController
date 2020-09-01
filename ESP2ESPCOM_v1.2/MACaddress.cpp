@@ -16,14 +16,12 @@ using namespace std;
 char** MACextraction(char input[])
 {
     int size = strlen(input);
-    cout <<"MACextraction Input array size is: \n";
-    cout<< size<<"\n";
+    //Creating a new array to restore the conversion results.
     char** result = new char*[6];
     for (int i=0; i<6;++i)
     {
         result[i]=new char[3];
     }
-    cout <<"MACextraction array generation  is: \n";
     int j=0;
     for(int i=0; i<size;++i)
     {   
@@ -32,17 +30,17 @@ char** MACextraction(char input[])
         if(input[i]==comp)
         {
             result[j][k]=input[i+1];
-            cout<<input[i+1];
+            //cout<<input[i+1];
             result[j][k+1]=input[i+2];
-            cout<<input[i+2];
-            cout<<" \n";
+            //cout<<input[i+2];
+            //cout<<" \n";
             ++j;
         }
     }  
     return result;
 }
 
-//Adding character together
+//Adding characterS together
 char** CharConc(char* input[])
 {
     //Creating a new array to restore the conversion results.
@@ -52,13 +50,10 @@ char** CharConc(char* input[])
         result[i]=new char[3];
     }
     //Converting
-    cout <<"Converted char array in int is: \n";
     for(int i=0; i<6;++i)
     {   
         result[i][0]=(input[i][0]);
         strncat(result[i], &input[i][1], 1);
-        cout<<result[i];
-        cout<<" \n";
     }  
     return result; 
 }
@@ -67,7 +62,6 @@ int hex2decimal(char hex[])
 {
     long long decimal, place;
     int i = 0, val, len;
-
     decimal = 0;
     place = 1;
 
@@ -102,36 +96,26 @@ int hex2decimal(char hex[])
         decimal += val * pow(16, len);
         len--;
     }
-    cout<<"Hexadecimal number = is: "<< hex<<" \n";
-    cout<<"Decimal number is: "<< decimal<<" \n";
+    //cout<<"Hexadecimal number = is: "<< hex<<" \n";
+    //cout<<"Decimal number is: "<< decimal<<" \n";
     //printf("Hexadecimal number = %s\n", hex);
     //printf("Decimal number = %lld", decimal);
     return decimal;
 }
-int main()
+int main(char* input)
 {
-    int val =hex2decimal("4C");
-    cout<<val<<"\n";    
+    int* result;
+    //int val =hex2decimal("4C");
     char** array;
-    char input[]="[\"0x4C\",\"0x11\",\"0xAE\",\"0xEA\",\"0xEE\",\"0xB4\"]";
+    //char input[]="[\"0x4C\",\"0x11\",\"0xAE\",\"0xEA\",\"0xEE\",\"0xB4\"]";
     int size = sizeof(input);
-    cout <<"Outside the function Input array size is: \n";
-    cout<< size<<"\n";
     array=MACextraction(input);
     char** converted;
     converted = CharConc(array);
     for (int i=0;i<6;++i)
     {
-        hex2decimal(converted[i]);
+        result[i]=hex2decimal(converted[i]);
     }
-
-    int s=0;
-    cout <<"Array is: \n";
-    for (int i=0;i<6;++i)
-    {
-         cout<<array[i][s];
-         cout<<array[i][s+1];
-         cout<<" \n";
-    }
-    return 0;
+    
+    return *result;
 }
