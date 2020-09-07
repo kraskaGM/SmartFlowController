@@ -294,6 +294,7 @@ function ShowHide(input) {
 		}
 		case 2:
 		{
+			bool Connected= ConnectionStatus(2);
 			ConnectionStatus(2);
 			if (Connected)
 			{	
