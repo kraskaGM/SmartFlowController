@@ -80,18 +80,19 @@ function ConnectionStatus(input)
 			MACAdress2[4]= document.getElementById("p2MAC5").value;
 			MACAdress2[5]= document.getElementById("p2MAC6").value;			
 			console.log(MACAdress2);
+			JSONmessage("sendMACAdress2",MACAdress2);
 			var field = document.getElementById("ConnectionStatus1").value;				
 			if (field==1)
 			{
 				id = document.getElementById("ConnectionStatus1");
 				id.innerHTML="Connection established";	
-			break;		
+				return true;		
 			}
 			else
 			{
 				id = document.getElementById("ConnectionStatus1");
 				id.innerHTML="Not connected";	
-			break;		
+				return false;		
 			}
 		}
 		case 2: 
@@ -102,19 +103,20 @@ function ConnectionStatus(input)
 			MACAdress3[3]= document.getElementById("p3MAC4").value;
 			MACAdress3[4]= document.getElementById("p3MAC5").value;	
 			MACAdress3[5]= document.getElementById("p3MAC6").value;	
-			console.log(MACAdress3);		
+			console.log(MACAdress3);
+			JSONmessage("sendMACAdress3",MACAdress3);
 			var field = document.getElementById("ConnectionStatus2").value;				
 			if (field==1)
 			{
 				id = document.getElementById("ConnectionStatus2");
 				id.innerHTML="Connection established";	
-				break;		
+				return true;		
 			}
 			else
 			{
 				id = document.getElementById("ConnectionStatus2");
 				id.innerHTML="Not connected";	
-			break;		
+				return false;		
 			}
 		}
 	}
@@ -270,33 +272,48 @@ function counter(input)
 }
 
 function ShowHide(input) {
-	switch(input) {
-	  case 1:
-		  ConnectionStatus(1);
-		  JSONmessage("sendMACAdress2",MACAdress2);
-		  //JSONmessage("sendMACAdress2",true);
-		  var x = document.getElementById("myDIV");
-		  if (x.style.display === "block") {
-		    x.style.display ="none" ;	
-		  } else {
-			x.style.display = "block";
-	  }
-		break;
-	  case 2:
-		  ConnectionStatus(2);
-		  JSONmessage("sendMACAdress3",MACAdress3);
-		  //JSONmessage("sendMACAdress2",true);		  
-		  var x = document.getElementById("myDIV2");
-		  if (x.style.display === "block") {
-			x.style.display ="none" ;
-		  } else {
-			x.style.display = "block";	
-		  }
-		break;
-	  default:
-			//JSONmessage("sendMACAdress2",false);
-			//JSONmessage("sendMACAdress2",false);
-		break;
+	switch(input) 
+	{
+		case 1:
+		{
+			bool Connected= ConnectionStatus(1);
+			if (Connected)
+			{		  
+				//JSONmessage("sendMACAdress2",true);
+				 var x = document.getElementById("myDIV");
+				 if (x.style.display === "block") 
+				 {
+					x.style.display ="none" ;	
+				 } 
+				else 
+				{
+					x.style.display = "block";
+				{
+			break;
+			}
+		}
+		case 2:
+		{
+			ConnectionStatus(2);
+			if (Connected)
+			{	
+				//JSONmessage("sendMACAdress2",true);		  
+				var x = document.getElementById("myDIV2");
+				if (x.style.display === "block")
+				{
+					x.style.display ="none" ;
+				} 
+			else
+				{  
+					x.style.display = "block";	
+				}
+			break;
+			}
+		}
+		default:
+				//JSONmessage("sendMACAdress2",false);
+				//JSONmessage("sendMACAdress2",false);
+				break;
 	}	
 
 
